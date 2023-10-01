@@ -42,35 +42,53 @@ function AddJobModal({ fetchData }) {
         description: '',
         reported_by: '',
         timeframe: '',
-        id: nanoid()
+        reference: ''
     });
 
 
 
     const handleChange = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        })
+    
+        // Check if the name is "reference" and the value is empty
+        if (name === "reference" && value.trim() == "") {
+            setFormData({
+                ...formData,
+                [name]: nanoid() // Set to nanoid value
+            });
+        } else {
+            setFormData({
+                ...formData,
+                [name]: value
+            });
+        }
     }
 
     const handleSubmit = (e) => {
-        e.preventDefault()
-        console.log(formData)
+        e.preventDefault();
+        
+        // Check if the 'reference' field is empty, and if so, set it to a nanoid value
+        const finalFormData = {
+            ...formData,
+            reference: formData.reference.trim() === "" ? nanoid() : formData.reference
+        };
+    
+        console.log(finalFormData);
+    
         const sendData = async () => {
             try {
-                const docRef = await addDoc(collection(db, "live-jobs"), formData);
-                console.log("Document written with ID: ", docRef.id, formData);
-                fetchData()
+                const docRef = await addDoc(collection(db, "live-jobs"), finalFormData);
+                console.log("Document written with ID: ", docRef.id, finalFormData);
+                fetchData();
             } catch (e) {
                 console.error("Error adding document: ", e);
             }
-        }
-        sendData()
-        closeModal()
-    }
+        };
+    
+        sendData();
+        closeModal();
+    };
 
     return (
         <div>
@@ -97,6 +115,8 @@ function AddJobModal({ fetchData }) {
                     <input type="text" name='reported_by' id='reported_by' value={formData.reported_by} onChange={handleChange} />
                     <label htmlFor="area">timeframe</label>
                     <input type="date" name='timeframe' id='timeframe' value={formData.timeframe} onChange={handleChange} />
+                    <label htmlFor="area">Reference</label>
+                    <input type="text" name='reference' id='reference' placeholder={nanoid()} onChange={handleChange} />
                     <button type='submit'>Submit</button>
                 </form>
             </Modal>

@@ -1,12 +1,13 @@
-import './JobCard.css';
+import './JobCard.css'
 import { doc, deleteDoc, collection, query, where, getDocs } from "firebase/firestore"; // Import from regular Firebase Firestore
 import { db } from '../../Config/firebaseConfig';
 
 function JobCard({ liveJobs, fetchData }) {
-    const handleDeleteJob = async (id) => {
-        console.log(id);
+
+    const handleDeleteJob = async (reference) => {
+        console.log(reference);
         const jobs = collection(db, 'live-jobs');
-        const q = query(jobs, where('id', '==', id)); // Create a query with Firestore
+        const q = query(jobs, where('reference', '==', reference)); // Create a query with Firestore
         console.log(q);
 
         try {
@@ -27,7 +28,7 @@ function JobCard({ liveJobs, fetchData }) {
     };
 
     return (
-        <div>
+        <div className='jobcard-container'>
             <ul>
                 {liveJobs?.map((job) => (
                     <div key={job.id}>
@@ -39,7 +40,8 @@ function JobCard({ liveJobs, fetchData }) {
                             <li>Reported By: {job.reported_by}</li>
                             <li>Timeframe: {job.timeframe}</li>
                         </ul>
-                        <button onClick={() => handleDeleteJob(job.id)}>Delete Job</button>
+                        <p>Reference: {job.reference}</p>
+                        <button onClick={() => handleDeleteJob(job.reference)}>Delete Job</button>
                     </div>
                 ))}
             </ul>

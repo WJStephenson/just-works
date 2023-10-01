@@ -1,0 +1,7 @@
+.jobcard-container {
+    width: 100%;
+    height: 200px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
+}

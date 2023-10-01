@@ -37,10 +37,11 @@ function Homepage() {
     return (
         <div>
             <h1>Live Jobs:</h1>
-            <JobCard liveJobs={liveJobs} fetchData={fetchData} />
-            <AddJobModal fetchData={fetchData} />
+            <div className='jobcard-wrapper'>
+                <JobCard liveJobs={liveJobs} fetchData={fetchData} />
+            </div>
             <h1>Add Job</h1>
-            
+            <AddJobModal fetchData={fetchData} />
         </div>
     );
 }
