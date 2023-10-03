@@ -1,21 +1,22 @@
-import './JobCard.css'
-import { doc, deleteDoc, collection, query, where, getDocs } from "firebase/firestore"; // Import from regular Firebase Firestore
+import React from 'react';
+import { doc, deleteDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { db } from '../../Config/firebaseConfig';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
 
 function JobCard({ liveJobs, fetchData }) {
 
     const handleDeleteJob = async (reference) => {
         console.log(reference);
         const jobs = collection(db, 'live-jobs');
-        const q = query(jobs, where('reference', '==', reference)); // Create a query with Firestore
-        console.log(q);
+        const q = query(jobs, where('reference', '==', reference));
 
         try {
             const querySnapshot = await getDocs(q);
 
             querySnapshot.forEach(async (document) => {
                 try {
-                    await deleteDoc(doc(db, 'live-jobs', document.id)); // Use deleteDoc directly with Firestore
+                    await deleteDoc(doc(db, 'live-jobs', document.id));
                     console.log('Document successfully deleted!');
                 } catch (error) {
                     console.error('Error deleting document: ', error);
@@ -28,25 +29,24 @@ function JobCard({ liveJobs, fetchData }) {
     };
 
     return (
-        <div className='jobcard-container'>
-            <ul>
-                {liveJobs?.map((job) => (
-                    <div key={job.id}>
-                        <h2>{job.area}</h2>
-                        <ul>
-                            <li>Contractor: {job.contractor}</li>
-                            <li>Date: {job.date}</li>
-                            <li>Description: {job.description}</li>
-                            <li>Reported By: {job.reported_by}</li>
-                            <li>Timeframe: {job.timeframe}</li>
-                        </ul>
-                        <p>Reference: {job.reference}</p>
-                        <button onClick={() => handleDeleteJob(job.reference)}>Delete Job</button>
-                    </div>
-                ))}
-            </ul>
-        </div>
+        <>
+            {
+                liveJobs.length === 0 ?
+                    <p>No jobs to display</p>
+                    :
+                    liveJobs.map((job) => (
+                        <Card key={job.reference} className="job-card">
+                            <Card.Body>
+                                <Card.Title>{job.area}</Card.Title>
+                                <Card.Text>{job.description}</Card.Text>
+                                <Button variant="danger" onClick={() => handleDeleteJob(job.reference)}>Delete</Button>
+                            </Card.Body>
+                        </Card>
+                    ))
+            }
+        </>
     );
 }
 
 export default JobCard;
+

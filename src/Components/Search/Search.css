@@ -1,0 +1,31 @@
+.search-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 80px;
+    height: 100vh;
+    padding: 0 1rem;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
+
+    position: absolute;
+    padding: 1rem;
+}
+
+.search-container svg {
+    width: 40px;
+    height: 40px;
+    color: cornflowerblue;
+    transition: all 0.2s ease-in-out;
+}
+
+.search-container a {
+    padding: 0 5px 15px 5px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.search-container svg:hover {
+    scale: 1.1;
+}

@@ -1,13 +1,21 @@
 import { useState } from 'react'
-import './App.css'
-import Homepage from './Pages/Homepage'
+import { Routes, Route, BrowserRouter } from 'react-router-dom'
+import ModalContextProvider from './Context/ModalContext'
+import Homepage from './Pages/Homepage/Homepage'
+import Search from './Components/Search/Search'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
 
   return (
-    <>
-      <Homepage />
-    </>
+    <ModalContextProvider>
+      <BrowserRouter>
+        <Search />
+        <Routes>
+          <Route path='/' element={<Homepage />} />
+        </Routes>
+      </BrowserRouter>
+    </ModalContextProvider>
   )
 }
 
