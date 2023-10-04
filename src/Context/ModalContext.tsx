@@ -1,16 +1,24 @@
-//context to store and add/remove properties from the shortlist
-import { useState, createContext } from "react";
+import { useState, createContext, Dispatch, SetStateAction } from "react";
 
-//create context
-export const ModalContext = createContext();
+interface ModalContextType {
+  show: boolean;
+  setShow: Dispatch<SetStateAction<boolean>>;
+}
 
-export default function ShortlistContextProvider(props) {
-    
-    const [show, setShow] = useState(false);
+const ModalContext = createContext<ModalContextType>({
+  show: false,
+  setShow: () => {},
+});
 
-    return (
-        <ModalContext.Provider value={{ show, setShow }}>
-            {props.children}
-        </ModalContext.Provider>
-    );
+export default ModalContext;
+
+export function ModalContextProvider(props) {
+  const [show, setShow] = useState(false);
+
+
+  return (
+    <ModalContext.Provider value={{ show, setShow }}>
+      {props.children}
+    </ModalContext.Provider>
+  );
 }

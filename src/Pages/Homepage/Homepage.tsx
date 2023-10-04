@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import './Homepage.css'
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../Config/firebaseConfig';
-import AddJobModal from '../../Components/AddJobModal/AddJobModal';
 import JobCard from '../../Components/JobCard/JobCard';
+import AddJobModal from '../../Components/AddJobModal/AddJobModal';
 // import Search from '../../Components/Search/Search';
 
 function Homepage() {
@@ -15,10 +15,12 @@ function Homepage() {
         description: string;
         reported_by: string;
         timeframe: string;
-        id: string;
+        priority: string;
+        reference: string;
     }
 
     const [liveJobs, setLiveJobs] = useState<Job[]>([]);
+    const [ selectedJob, setSelectedJob ] = useState<Job>();
 
     const fetchData = async () => {
         try {
@@ -37,12 +39,15 @@ function Homepage() {
 
     return (
         <div className='homepage-container'>
-            <div></div>
-            <div>
+            <div className='jocard-container'>
                 <h1>Live Jobs:</h1>
                 <div className='jobcard-wrapper'>
-                    <JobCard liveJobs={liveJobs} fetchData={fetchData} />
+                    <JobCard liveJobs={liveJobs} fetchData={fetchData} setSelectedJob={setSelectedJob} />
                 </div>
+            </div>
+            <div className='selectedjob-container'>
+                <h1>Selected Job:</h1>
+                {selectedJob?.length === 0 ? <p>No job selected</p> : <p>{selectedJob?.reference}</p>}
             </div>
             <AddJobModal fetchData={fetchData} />
         </div>
