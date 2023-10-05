@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './Homepage.css'
-import { DocumentData, QuerySnapshot, collection, getFirestore } from 'firebase/firestore';
-import { app } from '../../Config/firebaseConfig';
+import { collection } from 'firebase/firestore';
+import { db } from '../../Config/firebaseConfig';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import JobCard from '../../Components/JobCard/JobCard';
 import AddJobModal from '../../Components/AddJobModal/AddJobModal';
@@ -9,7 +9,6 @@ import SelectedJob from '../../Components/SelectedJob/SelectedJob';
 // import Search from '../../Components/Search/Search';
 
 function Homepage() {
-
     interface Job {
         name: string;
         area: string;
@@ -24,9 +23,10 @@ function Homepage() {
     }
 
     const [selectedJob, setSelectedJob] = useState('');
+    const [identifier, setIdentifier] = useState('');
 
     const [value, loading, error] = useCollection(
-        collection(getFirestore(app), 'live-jobs'),
+        collection(db, 'live-jobs'),
         {
             snapshotListenOptions: { includeMetadataChanges: true },
         }
@@ -35,7 +35,7 @@ function Homepage() {
 
     return (
         <div className='homepage-container'>
-            <div className='jocard-container'>
+            <div className='jobcard-container'>
                 <h1>Live Jobs:</h1>
                 <div className='jobcard-wrapper'>
                     {error && <strong>Error: {JSON.stringify(error)}</strong>}
@@ -45,7 +45,7 @@ function Homepage() {
                         :
                         <>
                             {value.docs.map((doc) => (
-                                <JobCard key={doc.id} job={doc.data()} setSelectedJob={setSelectedJob} />
+                                <JobCard key={doc.id} job={doc.data()} setSelectedJob={setSelectedJob} setIdentifier={setIdentifier} identifier={doc.id}/>
                             ))}
                         </>
                     )}
@@ -53,7 +53,7 @@ function Homepage() {
             </div>
             <div className='selectedjob-container'>
                 <h1>Selected Job:</h1>
-                {selectedJob?.length === 0 ? <p>No job selected</p> : <SelectedJob selectedJob={selectedJob} setSelectedJob={setSelectedJob} />}
+                {selectedJob?.length === 0 ? <p>No job selected</p> : <SelectedJob selectedJob={selectedJob} setSelectedJob={setSelectedJob} identifier={identifier}/>}
             </div>
             <AddJobModal />
         </div>

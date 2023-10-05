@@ -1,12 +1,38 @@
 import './SelectedJob.css'
-import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../Config/firebaseConfig';
 import Button from 'react-bootstrap/Button';
 import { useEffect, useState } from 'react';
+import Comment from '../Comment/Comment';
+import Form from 'react-bootstrap/Form';
+import { useCollection } from 'react-firebase-hooks/firestore';
 
-function SelectedJob({ selectedJob, setSelectedJob }) {
+function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
+
+    type CommentObject = {
+        comment: string;
+        date: string;
+        time: string;
+        user: string;
+    }
+
+    const [formData, setFormData] = useState({
+        comment: '',
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString(),
+        user: 'Jo Stephenson'
+    });
+
+
+    const [value, loading, error] = useCollection(
+        collection(db, `live-jobs/${identifier}/comments`),
+        {
+          snapshotListenOptions: { includeMetadataChanges: false },
+        }
+      );
 
     const [onHold, setOnHold] = useState<boolean>(false);
+
 
     const handleDeleteJob = async (reference: string) => {
         console.log(reference);
@@ -60,6 +86,45 @@ function SelectedJob({ selectedJob, setSelectedJob }) {
         }
     };
 
+    const handleFormChange = () => (e) => {
+        e.preventDefault();
+        const { name, value } = e.target;
+
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    };
+
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+
+        const sendData = async () => {
+            try {
+                const jobs = collection(db, 'live-jobs');
+                const q = query(jobs, where('reference', '==', selectedJob?.reference));
+
+                const querySnapshot = await getDocs(q);
+
+                querySnapshot.forEach(async (document) => {
+                    try {
+                        const docRef = doc(db, 'live-jobs', document.id);
+                        const commentsCollectionRef = collection(docRef, 'comments');
+                        const commentRef = doc(commentsCollectionRef);
+
+                        await setDoc(commentRef, formData);
+                        console.log('Document successfully written!');
+                    } catch (error) {
+                        console.error('Error writing document: ', error);
+                    }
+                });
+            } catch (error) {
+                console.error('Error querying documents: ', error);
+            }
+        };
+        sendData();
+    }
+
 
     return (
         <div className='selectedjob-container'>
@@ -89,7 +154,32 @@ function SelectedJob({ selectedJob, setSelectedJob }) {
                 <h3>{selectedJob?.description}</h3>
                 <p>Reported By: {selectedJob?.reported_by}</p>
             </div>
-            <Button variant="primary">Add Comment</Button>
+
+            <h2>Comments:</h2>
+
+            <Form>
+                <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label>Add a comment</Form.Label>
+                    <Form.Control type="text" placeholder="Comment..." name='comment' onChange={handleFormChange()} />
+                </Form.Group>
+                <Button variant="primary" type="submit" onClick={handleFormSubmit}>
+                    Add Comment
+                </Button>
+            </Form>
+            <div className='comments-container'>
+                {error && <strong>Error: {JSON.stringify(error)}</strong>}
+                {loading && <span>Loading Comments...</span>}
+                {value && (
+                    value.docs.length === 0 ? <p>No comments to display</p>
+                        :
+                        <>
+                            {value.docs.map((doc) => (
+                                console.log(doc.data()),
+                                <Comment key={doc.id} commentObject={doc.data()} />
+                            ))}
+                        </>
+                )}
+            </div>
         </div>
     )
 }
