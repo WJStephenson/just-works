@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './Homepage.css'
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../Config/firebaseConfig';
+import { DocumentData, QuerySnapshot, collection, getFirestore } from 'firebase/firestore';
+import { app } from '../../Config/firebaseConfig';
+import { useCollection } from 'react-firebase-hooks/firestore';
 import JobCard from '../../Components/JobCard/JobCard';
 import AddJobModal from '../../Components/AddJobModal/AddJobModal';
+import SelectedJob from '../../Components/SelectedJob/SelectedJob';
 // import Search from '../../Components/Search/Search';
 
 function Homepage() {
 
     interface Job {
+        name: string;
         area: string;
         contractor: string;
         date: string;
@@ -17,24 +20,17 @@ function Homepage() {
         timeframe: string;
         priority: string;
         reference: string;
+        onHold: boolean;
     }
 
-    const [liveJobs, setLiveJobs] = useState<Job[]>([]);
-    const [ selectedJob, setSelectedJob ] = useState<Job>();
+    const [selectedJob, setSelectedJob] = useState('');
 
-    const fetchData = async () => {
-        try {
-            const querySnapshot = await getDocs(collection(db, 'live-jobs'));
-            const jobsData = querySnapshot.docs.map((doc) => doc.data());
-            setLiveJobs(jobsData);
-        } catch (error) {
-            console.error('Error fetching data:', error);
+    const [value, loading, error] = useCollection(
+        collection(getFirestore(app), 'live-jobs'),
+        {
+            snapshotListenOptions: { includeMetadataChanges: true },
         }
-    };
-
-    useEffect(() => {
-        fetchData()
-    }, [])
+    );
 
 
     return (
@@ -42,14 +38,24 @@ function Homepage() {
             <div className='jocard-container'>
                 <h1>Live Jobs:</h1>
                 <div className='jobcard-wrapper'>
-                    <JobCard liveJobs={liveJobs} fetchData={fetchData} setSelectedJob={setSelectedJob} />
+                    {error && <strong>Error: {JSON.stringify(error)}</strong>}
+                    {loading && <span>Loading Jobs...</span>}
+                    {value && (
+                        value.docs.length === 0 ? <p>No jobs to display</p> 
+                        :
+                        <>
+                            {value.docs.map((doc) => (
+                                <JobCard key={doc.id} job={doc.data()} setSelectedJob={setSelectedJob} />
+                            ))}
+                        </>
+                    )}
                 </div>
             </div>
             <div className='selectedjob-container'>
                 <h1>Selected Job:</h1>
-                {selectedJob?.length === 0 ? <p>No job selected</p> : <p>{selectedJob?.reference}</p>}
+                {selectedJob?.length === 0 ? <p>No job selected</p> : <SelectedJob selectedJob={selectedJob} setSelectedJob={setSelectedJob} />}
             </div>
-            <AddJobModal fetchData={fetchData} />
+            <AddJobModal />
         </div>
     );
 }

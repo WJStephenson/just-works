@@ -3,7 +3,6 @@ import './Search.css'
 import { Link } from "react-router-dom";
 import { FaPlus, FaCheck, FaHome } from "react-icons/fa";
 import ModalContext from "../../Context/ModalContext";
-import AddJobModal from "../AddJobModal/AddJobModal";
 
 function Search() {
 

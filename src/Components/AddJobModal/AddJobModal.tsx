@@ -8,14 +8,14 @@ import Modal from 'react-bootstrap/Modal';
 import ModalContext from '../../Context/ModalContext';
 
 
-function AddJobModal({ fetchData }) {
+function AddJobModal() {
 
     const { show, setShow } = useContext(ModalContext);
 
     const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
 
     const [formData, setFormData] = useState({
+        name: '',
         area: '',
         contractor: '',
         date: '',
@@ -24,9 +24,9 @@ function AddJobModal({ fetchData }) {
         timeframe: '',
         reference: '',
         priority: '',
-        time: ''
+        time: '',
+        onHold: false
     });
-
 
 
     const handleChange = (e) => {
@@ -62,7 +62,6 @@ function AddJobModal({ fetchData }) {
             try {
                 const docRef = await addDoc(collection(db, "live-jobs"), finalFormData);
                 console.log("Document written with ID: ", docRef.id, finalFormData);
-                fetchData();
             } catch (e) {
                 console.error("Error adding document: ", e);
             }
@@ -80,6 +79,15 @@ function AddJobModal({ fetchData }) {
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
+                        <Form.Group className="mb-3" controlId="name">
+                            <Form.Label>Name this Job</Form.Label>
+                            <Form.Control
+                                name='name'
+                                type="text"
+                                autoFocus
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
                         <Form.Group className="mb-3" controlId="date">
                             <Form.Label>Date Raised</Form.Label>
                             <Form.Control
@@ -100,11 +108,11 @@ function AddJobModal({ fetchData }) {
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="priority">
                             <Form.Label>Priority</Form.Label>
-                            <Form.Select>
-                                <option value='low'>Low</option>
-                                <option value='medium'>Medium</option>
-                                <option value='high'>High</option>
-                                <option value='urgent'>Urgent</option>
+                            <Form.Select name='priority' onChange={handleChange} required autoFocus>
+                                <option value='Low'>Low</option>
+                                <option value='Medium'>Medium</option>
+                                <option value='High'>High</option>
+                                <option value='Urgent'>Urgent</option>
                             </Form.Select>
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="timeframe">
