@@ -10,9 +10,9 @@ import ModalContext from '../../Context/ModalContext';
 
 function AddJobModal() {
 
-    const { show, setShow } = useContext(ModalContext);
+    const { showAddModal, setShowAddModal } = useContext(ModalContext);
 
-    const handleClose = () => setShow(false);
+    const handleClose = () => setShowAddModal(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -68,12 +68,12 @@ function AddJobModal() {
         };
 
         sendData();
-        setShow(false);
+        setShowAddModal(false);
     };
 
     return (
         <>
-            <Modal show={show} onHide={handleClose}>
+            <Modal show={showAddModal} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Add a Job</Modal.Title>
                 </Modal.Header>

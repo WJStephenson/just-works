@@ -1,23 +1,31 @@
-import { useState, createContext, Dispatch, SetStateAction } from "react";
+import React, { useState, createContext, Dispatch, SetStateAction, ReactNode } from "react";
 
 interface ModalContextType {
-  show: boolean;
-  setShow: Dispatch<SetStateAction<boolean>>;
+  showAddModal: boolean;
+  setShowAddModal: Dispatch<SetStateAction<boolean>>;
+  showCompleteModal: boolean;
+  setShowCompleteModal: Dispatch<SetStateAction<boolean>>;
+}
+
+interface ModalContextProviderProps {
+  children: ReactNode;
 }
 
 const ModalContext = createContext<ModalContextType>({
-  show: false,
-  setShow: () => {},
+  showAddModal: false,
+  setShowAddModal: () => {},
+  showCompleteModal: false,
+  setShowCompleteModal: () => {},
 });
 
 export default ModalContext;
 
-export function ModalContextProvider(props) {
-  const [show, setShow] = useState(false);
-
+export function ModalContextProvider(props: ModalContextProviderProps) {
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
 
   return (
-    <ModalContext.Provider value={{ show, setShow }}>
+    <ModalContext.Provider value={{ showAddModal, setShowAddModal, showCompleteModal, setShowCompleteModal }}>
       {props.children}
     </ModalContext.Provider>
   );

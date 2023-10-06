@@ -2,19 +2,14 @@ import './SelectedJob.css'
 import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../Config/firebaseConfig';
 import Button from 'react-bootstrap/Button';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import Comment from '../Comment/Comment';
 import Form from 'react-bootstrap/Form';
 import { useCollection } from 'react-firebase-hooks/firestore';
+import ModalContext from '../../Context/ModalContext';
+import CompleteJobModal from '../CompleteJobModal/CompleteJobModal';
 
 function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
-
-    type CommentObject = {
-        comment: string;
-        date: string;
-        time: string;
-        user: string;
-    }
 
     const [formData, setFormData] = useState({
         comment: '',
@@ -23,15 +18,21 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
         user: 'Jo Stephenson'
     });
 
+    const { showCompleteModal, setShowCompleteModal } = useContext(ModalContext);
 
     const [value, loading, error] = useCollection(
         collection(db, `live-jobs/${identifier}/comments`),
         {
-          snapshotListenOptions: { includeMetadataChanges: false },
+            snapshotListenOptions: { includeMetadataChanges: false },
         }
-      );
+    );
 
     const [onHold, setOnHold] = useState<boolean>(false);
+
+
+    useEffect(() => {
+        setOnHold(selectedJob?.onHold);
+    }, [selectedJob])
 
 
     const handleDeleteJob = async (reference: string) => {
@@ -136,7 +137,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
                         <Button variant="warning" onClick={() => handleHoldJob(selectedJob?.reference)}>Hold</Button>
                 }
                 <div className='buttons-right'>
-                    <Button variant="success">Complete</Button>
+                    <Button variant="success" onClick={() => setShowCompleteModal(true)}>Complete</Button>
                     <Button variant="secondary">Edit</Button>
                     <Button variant="danger" onClick={() => handleDeleteJob(selectedJob?.reference)}>Delete</Button>
                 </div>
@@ -170,8 +171,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
                 {error && <strong>Error: {JSON.stringify(error)}</strong>}
                 {loading && <span>Loading Comments...</span>}
                 {value && (
-                    value.docs.length === 0 ? <p>No comments to display</p>
-                        :
+                    value.docs.length === 0 &&
                         <>
                             {value.docs.map((doc) => (
                                 console.log(doc.data()),
@@ -180,6 +180,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
                         </>
                 )}
             </div>
+            <CompleteJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} />
         </div>
     )
 }

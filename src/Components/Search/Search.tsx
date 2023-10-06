@@ -6,12 +6,12 @@ import ModalContext from "../../Context/ModalContext";
 
 function Search() {
 
-  const { setShow } = useContext(ModalContext);
+  const { setShowAddModal } = useContext(ModalContext);
 
   return (
     <div className='search-container'>
       <Link to={'/'} title="Home"><FaHome /></Link>
-      <Link to={'/'} onClick={() => setShow(true)} title="Add a Job"><FaPlus /></Link>
+      <Link to={'/'} onClick={() => setShowAddModal(true)} title="Add a Job"><FaPlus /></Link>
       <Link to={'/completed'} title="Completed Jobs"><FaCheck /></Link>
     </div>
   )
