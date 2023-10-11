@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Homepage.css'
 import { collection } from 'firebase/firestore';
-import { db } from '../../Config/firebaseConfig';
+import { auth, db } from '../../Config/firebaseConfig';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import JobCard from '../../Components/JobCard/JobCard';
 import AddJobModal from '../../Components/AddJobModal/AddJobModal';
@@ -32,6 +32,7 @@ function Homepage() {
         }
     );
 
+   
 
     return (
         <div className='homepage-container'>

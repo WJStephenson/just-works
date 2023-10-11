@@ -4,6 +4,8 @@
     justify-content: space-between;
     height: 90vh;
     width: 100%;
+
+    overflow-y: scroll;
 }
 
 .priority-ref {
@@ -26,6 +28,6 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    overflow-y: scroll;
     padding: 30px 0px;
+    height: 600px;
 }

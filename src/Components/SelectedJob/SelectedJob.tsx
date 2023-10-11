@@ -1,6 +1,6 @@
 import './SelectedJob.css'
 import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
-import { db } from '../../Config/firebaseConfig';
+import { auth, db } from '../../Config/firebaseConfig';
 import Button from 'react-bootstrap/Button';
 import { useEffect, useState, useContext } from 'react';
 import Comment from '../Comment/Comment';
@@ -15,7 +15,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
         comment: '',
         date: new Date().toLocaleDateString(),
         time: new Date().toLocaleTimeString(),
-        user: 'Jo Stephenson'
+        user: auth.currentUser?.displayName
     });
 
     const { showCompleteModal, setShowCompleteModal } = useContext(ModalContext);
@@ -23,7 +23,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
     const [value, loading, error] = useCollection(
         collection(db, `live-jobs/${identifier}/comments`),
         {
-            snapshotListenOptions: { includeMetadataChanges: false },
+            snapshotListenOptions: { includeMetadataChanges: true },
         }
     );
 
@@ -171,13 +171,13 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
                 {error && <strong>Error: {JSON.stringify(error)}</strong>}
                 {loading && <span>Loading Comments...</span>}
                 {value && (
-                    value.docs.length === 0 &&
-                        <>
-                            {value.docs.map((doc) => (
-                                console.log(doc.data()),
+                    <>
+                        {value.docs.map((doc) => (
+                            <>
                                 <Comment key={doc.id} commentObject={doc.data()} />
-                            ))}
-                        </>
+                            </>
+                        ))}
+                    </>
                 )}
             </div>
             <CompleteJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} />
