@@ -30,3 +30,14 @@
     gap: 20px;
     align-items: center;
 }
+
+.accordian-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.accordian-icons {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+}

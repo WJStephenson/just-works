@@ -8,6 +8,7 @@ import Form from 'react-bootstrap/Form';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import ModalContext from '../../Context/ModalContext';
 import CompleteJobModal from '../CompleteJobModal/CompleteJobModal';
+import DeleteJobModal from '../DeleteJobModal/DeleteJobModal';
 
 function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
 
@@ -18,7 +19,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
         user: auth.currentUser?.displayName
     });
 
-    const { showCompleteModal, setShowCompleteModal } = useContext(ModalContext);
+    const { showCompleteModal, setShowCompleteModal, setShowDeleteModal } = useContext(ModalContext);
 
     const [value, loading, error] = useCollection(
         collection(db, `live-jobs/${identifier}/comments`),
@@ -35,27 +36,6 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
     }, [selectedJob])
 
 
-    const handleDeleteJob = async (reference: string) => {
-        console.log(reference);
-        const jobs = collection(db, 'live-jobs');
-        const q = query(jobs, where('reference', '==', reference));
-
-        try {
-            const querySnapshot = await getDocs(q);
-
-            querySnapshot.forEach(async (document) => {
-                try {
-                    await deleteDoc(doc(db, 'live-jobs', document.id));
-                    console.log('Document successfully deleted!');
-                } catch (error) {
-                    console.error('Error deleting document: ', error);
-                }
-            });
-            setSelectedJob('');
-        } catch (error) {
-            console.error('Error querying documents: ', error);
-        }
-    };
 
     const handleHoldJob = async (reference: string) => {
         console.log(reference);
@@ -139,7 +119,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
                 <div className='buttons-right'>
                     <Button variant="success" onClick={() => setShowCompleteModal(true)}>Complete</Button>
                     <Button variant="secondary">Edit</Button>
-                    <Button variant="danger" onClick={() => handleDeleteJob(selectedJob?.reference)}>Delete</Button>
+                    <Button variant="danger" onClick={() => setShowDeleteModal(true)}>Delete</Button>
                 </div>
             </div>
             <div>
@@ -181,6 +161,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
                 )}
             </div>
             <CompleteJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} />
+            <DeleteJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} />
         </div>
     )
 }

@@ -3,6 +3,7 @@ import { useCollection } from 'react-firebase-hooks/firestore';
 import CompletedJobCard from '../../Components/CompletedJobCard/CompletedJobCard';
 import { db } from '../../Config/firebaseConfig';
 import './Completedjobs.css'
+import Accordion from 'react-bootstrap/Accordion';
 
 function CompletedJobs() {
 
@@ -16,6 +17,7 @@ function CompletedJobs() {
     return (
         <div className='completed-wrapper'>
             <h1>Completed Jobs:</h1>
+            <Accordion defaultActiveKey="0">
             <div className='completed-container'>
                 {error && <strong>Error: {JSON.stringify(error)}</strong>}
                 {loading && <span>Loading Jobs...</span>}
@@ -29,6 +31,7 @@ function CompletedJobs() {
                         </>
                 )}
             </div>
+            </Accordion>
         </div>
     )
 }

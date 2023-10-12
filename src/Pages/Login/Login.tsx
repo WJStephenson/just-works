@@ -14,12 +14,6 @@ function Login({ signInWithGoogle, loading, error, setIsLoggedIn }) {
         emailError,
     ] = useSignInWithEmailAndPassword(auth);
 
-    if (loading || emailLoading) return (
-        <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-        </Spinner>
-    );
-
     if (error || emailError) return (<div>Error: {error}</div>);
 
     const emailLogin = async (e) => {
@@ -35,31 +29,39 @@ function Login({ signInWithGoogle, loading, error, setIsLoggedIn }) {
     return (
         <div className='login-container'>
             <h1>Just Works</h1>
-            <Form onSubmit={emailLogin}>
-                <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" name="email" placeholder="Enter email" required />
-                    <Form.Text className="text-muted">
-                        We'll never share your email with anyone else.
-                    </Form.Text>
-                </Form.Group>
+            {
+                loading || emailLoading ?
+                    <Spinner animation="border" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </Spinner>
+                    :
+                    <>
+                        <Form onSubmit={emailLogin}>
+                            <Form.Group className="mb-3" controlId="formBasicEmail">
+                                <Form.Label>Email address</Form.Label>
+                                <Form.Control type="email" name="email" placeholder="Enter email" required />
+                                <Form.Text className="text-muted">
+                                    We'll never share your email with anyone else.
+                                </Form.Text>
+                            </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" name="password" placeholder="Password" required />
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
-            </Form>
-            <br />
-            <h3>or</h3>
-            <br />
-            <Card>
-                <Card.Body>
-                    <Button variant="primary" onClick={signInWithGoogle}>Sign in with Google</Button>
-                </Card.Body>
-            </Card>
+                            <Form.Group className="mb-3" controlId="formBasicPassword">
+                                <Form.Label>Password</Form.Label>
+                                <Form.Control type="password" name="password" placeholder="Password" required />
+                            </Form.Group>
+                            <Button variant="primary" type="submit">
+                                Submit
+                            </Button>
+                        </Form>
+                        <br />
+                        <h3>or</h3>
+                        <br />
+                        <Card.Body>
+                            <Button variant="primary" onClick={signInWithGoogle}>Sign in with Google</Button>
+                        </Card.Body>
+                    </>
+            }
+
         </div>
     );
 }
