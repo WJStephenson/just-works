@@ -19,7 +19,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
         user: auth.currentUser?.displayName
     });
 
-    const { showCompleteModal, setShowCompleteModal, setShowDeleteModal } = useContext(ModalContext);
+    const { setShowCompleteModal, setShowDeleteModal } = useContext(ModalContext);
 
     const [value, loading, error] = useCollection(
         collection(db, `live-jobs/${identifier}/comments`),

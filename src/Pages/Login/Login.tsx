@@ -7,6 +7,8 @@ import { auth } from '../../Config/firebaseConfig';
 
 function Login({ signInWithGoogle, loading, error, setIsLoggedIn }) {
 
+    document.title = 'Just Works | Login';
+
     const [
         signInWithEmailAndPassword,
         user,

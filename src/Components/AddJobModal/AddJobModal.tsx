@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../../Config/firebaseConfig';
 import { nanoid } from 'nanoid';
@@ -7,63 +7,61 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import ModalContext from '../../Context/ModalContext';
 
-
 function AddJobModal() {
-
     const { showAddModal, setShowAddModal } = useContext(ModalContext);
-
     const handleClose = () => setShowAddModal(false);
 
     const [formData, setFormData] = useState({
         name: '',
         area: '',
         contractor: '',
-        date: '',
+        start: '',
+        startDate: '',
         description: '',
         reported_by: '',
-        timeframe: '',
+        complete: '',
+        completeTime: '',
         reference: '',
-        priority: '',
+        priority: 'low', //default to low
         time: '',
-        onHold: false
+        onHold: false,
+        isRecurring: false,
+        recurrenceFrequency: 'monthly', // Default to monthly
+        added: new Date().toLocaleDateString(),
     });
 
-
     const handleChange = (e) => {
-        e.preventDefault();
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
 
-        // Check if the name is "reference" and the value is empty
-        if (name === "reference" && value.trim() == "") {
+        if (type === 'checkbox') {
             setFormData({
                 ...formData,
-                [name]: nanoid() // Set to nanoid value
+                [name]: checked,
             });
         } else {
             setFormData({
                 ...formData,
-                [name]: value
+                [name]: value,
             });
         }
-    }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Check if the 'reference' field is empty, and if so, set it to a nanoid value
         const finalFormData = {
             ...formData,
-            reference: formData.reference.trim() === "" ? nanoid() : formData.reference
+            reference: formData.reference.trim() === '' ? nanoid() : formData.reference,
         };
 
         console.log(finalFormData);
 
         const sendData = async () => {
             try {
-                const docRef = await addDoc(collection(db, "live-jobs"), finalFormData);
-                console.log("Document written with ID: ", docRef.id, finalFormData);
+                const docRef = await addDoc(collection(db, 'live-jobs'), finalFormData);
+                console.log('Document written with ID: ', docRef.id, finalFormData);
             } catch (e) {
-                console.error("Error adding document: ", e);
+                console.error('Error adding document: ', e);
             }
         };
 
@@ -88,19 +86,60 @@ function AddJobModal() {
                                 onChange={handleChange}
                             />
                         </Form.Group>
+                        <Form.Group className="mb-3" controlId="isRecurring">
+                            <Form.Check
+                                name="isRecurring"
+                                type="checkbox"
+                                label="Recurring Job"
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                        {
+                            formData.isRecurring && (
+                                <Form.Group className="mb-3" controlId="recurrenceFrequency">
+                                    <Form.Label>Recurrence Frequency</Form.Label>
+                                    <Form.Select name="recurrenceFrequency" onChange={handleChange} required>
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="quarterly">Quarterly</option>
+                                        <option value="6 monthly">6 Monthly</option>
+                                        <option value="annually">Annually</option>
+                                    </Form.Select>
+                                </Form.Group>
+                            )
+                        }
                         <Form.Group className="mb-3" controlId="date">
-                            <Form.Label>Date Raised</Form.Label>
+                            <Form.Label>Start Date</Form.Label>
                             <Form.Control
-                                name='date'
+                                name='startDate'
                                 type="date"
                                 autoFocus
                                 onChange={handleChange}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="time">
-                            <Form.Label>Time Raised</Form.Label>
+                            <Form.Label>Start Time</Form.Label>
                             <Form.Control
-                                name='time'
+                                name='start'
+                                type="time"
+                                autoFocus
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="timeframe">
+                            <Form.Label>Estimated Completion Date</Form.Label>
+                            <Form.Control
+                                name='complete'
+                                type="date"
+                                autoFocus
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="time">
+                            <Form.Label>Eastimated Complete Time</Form.Label>
+                            <Form.Control
+                                name='completeTime'
                                 type="time"
                                 autoFocus
                                 onChange={handleChange}
@@ -114,15 +153,6 @@ function AddJobModal() {
                                 <option value='High'>High</option>
                                 <option value='Urgent'>Urgent</option>
                             </Form.Select>
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="timeframe">
-                            <Form.Label>Estimated Completion Date</Form.Label>
-                            <Form.Control
-                                name='timeframe'
-                                type="date"
-                                autoFocus
-                                onChange={handleChange}
-                            />
                         </Form.Group>
                         <Form.Group
                             className="mb-3"

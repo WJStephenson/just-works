@@ -15,10 +15,11 @@ function JobCard({ job, setSelectedJob, identifier, setIdentifier }) {
         <Accordion defaultActiveKey="1">
             {
                 <Accordion.Item eventKey="0" key={job.reference} >
-                    <Accordion.Header className='accordian-header' >
+                    <Accordion.Header className='accordion-header' >
                         {job.name}
-                        <div className='accordian-icons'>
+                        <div className='accordion-icons'>
                             {job.onHold === true && <div className='onhold-icon'>On Hold</div>}
+                            {job.isRecurring === true && <div className='rec-icon'>Recurring</div>}
                             {
                                 job.priority === 'Low' &&
                                 <div className='priority-icon low-priority'>{job.priority}</div>
@@ -40,8 +41,9 @@ function JobCard({ job, setSelectedJob, identifier, setIdentifier }) {
                     <Accordion.Body>
                         <Card key={job.reference} className="job-card">
                             <Card.Body>
-                                <Card.Title>{job.name}</Card.Title>
                                 <Card.Text>{job.description}</Card.Text>
+                                <Card.Text>{job.start}</Card.Text>
+                                <Card.Text>{job.end}</Card.Text>
                                 <Button variant="primary" onClick={() => handleClick(job)}>View</Button>
                             </Card.Body>
                         </Card>

@@ -7,8 +7,6 @@ import { useContext } from 'react';
 
 function DeleteJobModal({ selectedJob, setSelectedJob }) {
 
-    console.log(selectedJob);
-
     const { showDeleteModal, setShowDeleteModal } = useContext(ModalContext);
 
     const handleDeleteJob = async (reference: string) => {
@@ -28,6 +26,7 @@ function DeleteJobModal({ selectedJob, setSelectedJob }) {
                 }
             });
             setSelectedJob('');
+            setShowDeleteModal(false);
         } catch (error) {
             console.error('Error querying documents: ', error);
         }
@@ -35,18 +34,17 @@ function DeleteJobModal({ selectedJob, setSelectedJob }) {
 
     return (
         <div
-            className="modal show"
-            style={{ display: 'block', position: 'initial' }}
+            className="modal"
         >
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Complete Job</Modal.Title>
+                    <Modal.Title>Delete Job</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body>
                     <h2>{selectedJob.name}</h2>
-                    <p>Are you sure you want to complete this job? </p>
-                    <p><strong>Once complete it cannot be reopened.</strong></p>
+                    <p>Are you sure you want to delete this job? </p>
+                    <p><strong>Once deleted it will be archived as deleted and cannot be restored.</strong></p>
                 </Modal.Body>
 
                 <Modal.Footer>

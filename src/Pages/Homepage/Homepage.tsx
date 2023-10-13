@@ -9,6 +9,9 @@ import SelectedJob from '../../Components/SelectedJob/SelectedJob';
 // import Search from '../../Components/Search/Search';
 
 function Homepage() {
+
+    document.title = 'Just Works | Homepage';
+
     interface Job {
         name: string;
         area: string;

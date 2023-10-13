@@ -1,7 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import './Search.css'
 import { Link, useNavigate } from "react-router-dom";
-import { FaPlus, FaCheck, FaHome } from "react-icons/fa";
+import { FaPlus, FaCheck, FaHome, FaCalendar, FaChartBar } from "react-icons/fa";
+import { BiLogOut } from "react-icons/bi";
 import ModalContext from "../../Context/ModalContext";
 import Button from 'react-bootstrap/Button'
 import { auth } from "../../Config/firebaseConfig";
@@ -15,7 +16,7 @@ function Search({ signOut, setIsLoggedIn }) {
 
   const logOut = async () => {
     const success = await signOut();
-    if(success) {
+    if (success) {
       console.log('Signed out')
       setIsLoggedIn(false);
       navigate('/login')
@@ -25,9 +26,9 @@ function Search({ signOut, setIsLoggedIn }) {
   const user = auth.currentUser;
 
   useEffect(() => {
-      const name = user?.displayName;
-      const initials = name?.split(' ').map((n: string) => n[0]).join('') ?? ''; // Provide '' as the default value
-      setUserInitials(initials);
+    const name = user?.displayName;
+    const initials = name?.split(' ').map((n: string) => n[0]).join('') ?? ''; // Provide '' as the default value
+    setUserInitials(initials);
   }, [user]);
 
   return (
@@ -35,9 +36,11 @@ function Search({ signOut, setIsLoggedIn }) {
       <Link to={'/'} title="Home"><FaHome /></Link>
       <Link to={'/'} onClick={() => setShowAddModal(true)} title="Add a Job"><FaPlus /></Link>
       <Link to={'/completed'} title="Completed Jobs"><FaCheck /></Link>
-      
-      <div className='user' title={user?.displayName}>{userInitials}</div>
-      <Button onClick={logOut} title="Sign out">Sign Out</Button>
+      <Link to={'/calendar'} title="Calendar"><FaCalendar /></Link>
+      <Link to={'/analytics'} title="Analytics"><FaChartBar /></Link>
+
+      <div className='user' title={user?.displayName}>{userInitials}L</div>
+      <Button onClick={logOut} title="Sign out"><BiLogOut /></Button>
     </div>
   )
 }

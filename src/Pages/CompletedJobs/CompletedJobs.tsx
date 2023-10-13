@@ -7,6 +7,8 @@ import Accordion from 'react-bootstrap/Accordion';
 
 function CompletedJobs() {
 
+    document.title = 'Just Works | Completed Jobs';
+
     const [value, loading, error] = useCollection(
         collection(db, 'completed-jobs'),
         {

@@ -9,6 +9,8 @@ import { auth } from './Config/firebaseConfig';
 import Login from './Pages/Login/Login';
 import './App.css';
 import { useState } from 'react';
+import MyCalendar from './Pages/MyCalendar/MyCalendar';
+import Analytics from './Pages/Analytics/Analytics';
 
 function App() {
   const [signOut] = useSignOut(auth);
@@ -34,6 +36,8 @@ function App() {
           <Routes>
             <Route path="/" element={isLoggedIn ? (<Homepage />) : (<Navigate to={isLoggedIn ? '/' : "/login"} />)} />
             <Route path="/completed" element={isLoggedIn ? (<CompletedJobs />) : (<Navigate to={isLoggedIn ? 'complete' : "/login"} />)} />
+            <Route path='/calendar' element={isLoggedIn ? (<MyCalendar />) : (<Navigate to={isLoggedIn ? 'calendar' : "/login"} />)} />
+            <Route path='/analytics' element={isLoggedIn ? (<Analytics />) : (<Navigate to={isLoggedIn ? 'analytics' : "/login"} />)} />
             <Route path="/login" element={isLoggedIn ? (<Navigate to="/" />) : (<Login signInWithGoogle={signIn} loading={loading} error={error} setIsLoggedIn={setIsLoggedIn} />)} />
           </Routes>
         </div>

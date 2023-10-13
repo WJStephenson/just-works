@@ -1,0 +1,12 @@
+.calendar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 85vw;
+    height: 85vh;
+    margin: auto;
+
+    border: #0d6efd 2px solid;
+    border-radius: 20px;
+    padding: 20px;
+}
