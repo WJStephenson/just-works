@@ -11,6 +11,7 @@ import './App.css';
 import { useState } from 'react';
 import MyCalendar from './Pages/MyCalendar/MyCalendar';
 import Analytics from './Pages/Analytics/Analytics';
+import Settings from './Pages/Settings/Settings';
 
 function App() {
   const [signOut] = useSignOut(auth);
@@ -39,6 +40,8 @@ function App() {
             <Route path='/calendar' element={isLoggedIn ? (<MyCalendar />) : (<Navigate to={isLoggedIn ? 'calendar' : "/login"} />)} />
             <Route path='/analytics' element={isLoggedIn ? (<Analytics />) : (<Navigate to={isLoggedIn ? 'analytics' : "/login"} />)} />
             <Route path="/login" element={isLoggedIn ? (<Navigate to="/" />) : (<Login signInWithGoogle={signIn} loading={loading} error={error} setIsLoggedIn={setIsLoggedIn} />)} />
+            <Route path="/settings" element={isLoggedIn ? (<Settings />) : (<Navigate to={isLoggedIn ? 'settings' : "/login"} />)} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
       </ModalContextProvider>

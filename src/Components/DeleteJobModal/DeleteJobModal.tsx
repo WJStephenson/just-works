@@ -44,7 +44,7 @@ function DeleteJobModal({ selectedJob, setSelectedJob }) {
                 <Modal.Body>
                     <h2>{selectedJob.name}</h2>
                     <p>Are you sure you want to delete this job? </p>
-                    <p><strong>Once deleted it will be archived as deleted and cannot be restored.</strong></p>
+                    <p><strong>Once deleted it cannot be restored.</strong></p>
                 </Modal.Body>
 
                 <Modal.Footer>

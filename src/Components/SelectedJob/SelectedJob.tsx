@@ -1,5 +1,5 @@
 import './SelectedJob.css'
-import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import { collection, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { auth, db } from '../../Config/firebaseConfig';
 import Button from 'react-bootstrap/Button';
 import { useEffect, useState, useContext } from 'react';
@@ -9,6 +9,7 @@ import { useCollection } from 'react-firebase-hooks/firestore';
 import ModalContext from '../../Context/ModalContext';
 import CompleteJobModal from '../CompleteJobModal/CompleteJobModal';
 import DeleteJobModal from '../DeleteJobModal/DeleteJobModal';
+import EditJobModal from '../EditJobModal/EditJobModal';
 
 function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
 
@@ -19,7 +20,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
         user: auth.currentUser?.displayName
     });
 
-    const { setShowCompleteModal, setShowDeleteModal } = useContext(ModalContext);
+    const { setShowCompleteModal, setShowDeleteModal, setShowEditJobModal } = useContext(ModalContext);
 
     const [value, loading, error] = useCollection(
         collection(db, `live-jobs/${identifier}/comments`),
@@ -34,7 +35,6 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
     useEffect(() => {
         setOnHold(selectedJob?.onHold);
     }, [selectedJob])
-
 
 
     const handleHoldJob = async (reference: string) => {
@@ -118,7 +118,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
                 }
                 <div className='buttons-right'>
                     <Button variant="success" onClick={() => setShowCompleteModal(true)}>Complete</Button>
-                    <Button variant="secondary">Edit</Button>
+                    <Button variant="secondary" onClick={() => setShowEditJobModal(true)}>Edit</Button>
                     <Button variant="danger" onClick={() => setShowDeleteModal(true)}>Delete</Button>
                 </div>
             </div>
@@ -162,6 +162,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
             </div>
             <CompleteJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} />
             <DeleteJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} />
+            <EditJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} identifier={identifier} />
         </div>
     )
 }

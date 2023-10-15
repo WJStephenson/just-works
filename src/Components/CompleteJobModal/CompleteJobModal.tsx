@@ -57,7 +57,7 @@ function CompleteJobModal({ selectedJob, setSelectedJob }) {
 
                 <Modal.Footer>
                     <Button variant="primary" onClick={() => setShowCompleteModal(false)}>Close</Button>
-                    <Button variant="warning" onClick={handleCompleteJob}>Complete</Button>
+                    <Button variant="success" onClick={handleCompleteJob}>Complete</Button>
                 </Modal.Footer>
             </Modal>
         </div>

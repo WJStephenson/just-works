@@ -16,17 +16,15 @@ function AddJobModal() {
         area: '',
         contractor: '',
         start: '',
-        startDate: '',
+        complete: '',
         description: '',
         reported_by: '',
-        complete: '',
-        completeTime: '',
         reference: '',
         priority: 'low', //default to low
         time: '',
         onHold: false,
         isRecurring: false,
-        recurrenceFrequency: 'monthly', // Default to monthly
+        recurrenceFrequency: 'daily', // Default to monthly
         added: new Date().toLocaleDateString(),
     });
 
@@ -110,37 +108,19 @@ function AddJobModal() {
                             )
                         }
                         <Form.Group className="mb-3" controlId="date">
-                            <Form.Label>Start Date</Form.Label>
-                            <Form.Control
-                                name='startDate'
-                                type="date"
-                                autoFocus
-                                onChange={handleChange}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="time">
-                            <Form.Label>Start Time</Form.Label>
+                            <Form.Label>Start</Form.Label>
                             <Form.Control
                                 name='start'
-                                type="time"
+                                type="datetime-local"
                                 autoFocus
                                 onChange={handleChange}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="timeframe">
-                            <Form.Label>Estimated Completion Date</Form.Label>
+                            <Form.Label>Estimated Completion</Form.Label>
                             <Form.Control
                                 name='complete'
-                                type="date"
-                                autoFocus
-                                onChange={handleChange}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="time">
-                            <Form.Label>Eastimated Complete Time</Form.Label>
-                            <Form.Control
-                                name='completeTime'
-                                type="time"
+                                type="datetime-local"
                                 autoFocus
                                 onChange={handleChange}
                             />
