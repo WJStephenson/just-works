@@ -20,6 +20,8 @@ interface SelectedJobProps {
 
 function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobProps) {
 
+    const [validate, setValidate] = useState<boolean>(false);
+
     const [formData, setFormData] = useState({
         comment: '',
         datetime: new Date().toISOString(),
@@ -81,8 +83,13 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
         });
     };
 
-    const handleFormSubmit = (e: React.MouseEvent) => {
+    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (e.currentTarget.checkValidity() === false) {
+            setValidate(true);
+            return;
+        }
+        setValidate(false);
 
         const sendData = async () => {
             try {
@@ -151,12 +158,12 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
 
             <div className='comments-container'>
                 <h2>Comments:</h2>
-                <Form>
+                <Form onSubmit={handleFormSubmit} noValidate validated={validate}>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>Add a comment</Form.Label>
-                        <Form.Control type="text" placeholder="Comment..." name='comment' value={formData.comment} onChange={handleFormChange()} />
+                        <Form.Control type="text" placeholder="Comment..." name='comment' value={formData.comment} onChange={handleFormChange()} required />
                     </Form.Group>
-                    <Button variant="primary" type="submit" onClick={handleFormSubmit}>
+                    <Button variant="primary" type="submit">
                         Add Comment
                     </Button>
                 </Form>
