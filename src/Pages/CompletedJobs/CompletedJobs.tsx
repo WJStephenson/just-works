@@ -1,6 +1,6 @@
 import { collection } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
-import CompletedJobCard from '../../Components/CompletedJobCard/CompletedJobCard';
+import CompletedJobCard, { CompletedJobCardProps } from '../../Components/CompletedJobCard/CompletedJobCard';
 import { db } from '../../Config/firebaseConfig';
 import './Completedjobs.css'
 import Accordion from 'react-bootstrap/Accordion';
@@ -28,7 +28,7 @@ function CompletedJobs() {
                         :
                         <>
                             {value.docs.map((doc) => (
-                                <CompletedJobCard key={doc.id} job={doc.data()} />
+                                <CompletedJobCard key={doc.id} job={doc.data() as CompletedJobCardProps['job']} />
                             ))}
                         </>
                 )}

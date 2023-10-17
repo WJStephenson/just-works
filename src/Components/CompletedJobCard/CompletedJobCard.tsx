@@ -1,7 +1,7 @@
 import Card from 'react-bootstrap/Card';
 import Accordion from 'react-bootstrap/Accordion';
 
-type CompletedJobCardProps = {
+export type CompletedJobCardProps = {
     job: {
         name: string;
         area: string;

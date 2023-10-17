@@ -165,7 +165,15 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
                     <>
                         {value.docs.map((doc) => (
                             <>
-                                <Comment key={doc.id} commentObject={doc.data()} />
+                                <Comment
+                                    key={doc.id}
+                                    commentObject={{
+                                        comment: doc.data().comment,
+                                        user: doc.data().user,
+                                        time: doc.data().time,
+                                        date: doc.data().date,
+                                    }}
+                                />
                             </>
                         ))}
                     </>
