@@ -1,62 +1,76 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { ChangeEvent, useContext, useEffect, useState } from 'react'
 import { Modal, Form, Button } from 'react-bootstrap'
 import ModalContext from '../../Context/ModalContext';
-import { collection, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { DocumentReference, collection, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../../Config/firebaseConfig';
+import { Job } from '../../Pages/Homepage/Homepage';
 
-function EditJobModal({ selectedJob, setSelectedJob, identifier }) {
+type EditJobModalProps = {
+    selectedJob: Job | null;
+    setSelectedJob: React.Dispatch<React.SetStateAction<Job | null>>;
+    identifier: string;
+}
+
+type Change = {
+    field: string;
+    oldValue: string | boolean;
+    newValue: string | boolean;
+}
+
+function EditJobModal({ selectedJob, setSelectedJob, identifier }: EditJobModalProps) {
 
     const { showEditJobModal, setShowEditJobModal } = useContext(ModalContext);
 
     const handleClose = () => setShowEditJobModal(false);
 
-    const [changesSummary, setChangesSummary] = useState([]);
+    const [changesSummary, setChangesSummary] = useState<Array<Change>>([]);
 
-    const [formData, setFormData] = useState({
-        name: selectedJob.name,
-        area: selectedJob.area,
-        contractor: selectedJob.contractor,
-        start: selectedJob.start,
-        complete: selectedJob.complete,
-        description: selectedJob.description,
-        reported_by: selectedJob.reported_by,
-        reference: selectedJob.reference,
-        priority: selectedJob.priority,
-        time: selectedJob.time,
-        onHold: selectedJob.onHold,
-        isRecurring: selectedJob.isRecurring,
-        recurrenceFrequency: selectedJob.recurrenceFrequency,
-        added: selectedJob.added,
-    });
+    const [formData, setFormData] = useState<Job>(selectedJob);
 
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type } = e.target;
+    
         setFormData((prevFormData) => {
             return {
-                ...prevFormData,
-                [name]: type === 'checkbox' ? checked : value,
-            };
+                ...prevFormData ?? {},
+                [name]: type === 'checkbox' ? e.target.checked : value,
+                name: name === 'name' ? value as string : prevFormData?.name,
+            } as Job;
         });
-    };
+    }
+    
+    const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
+        const { name, value } = e.target;
+    
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData ?? {},
+                [name]: value,
+                name: name === 'name' ? value as string : prevFormData?.name,
+            } as Job;
+        });
+    }
 
-    const generateChangesSummary = (originalData, editedData) => {
+
+    const generateChangesSummary = (originalData: Job | null, editedData: Job) => {
         const changes = [];
 
-        for (const key in editedData) {
-            if (originalData[key] !== editedData[key]) {
-                changes.push({
-                    field: key,
-                    oldValue: originalData[key],
-                    newValue: editedData[key],
-                });
+        if (originalData) {
+            for (const key in editedData) {
+                if (originalData[key as keyof Job] !== editedData[key as keyof Job]) {
+                    changes.push({
+                        field: key,
+                        oldValue: originalData[key as keyof Job],
+                        newValue: editedData[key as keyof Job],
+                    });
+                }
             }
         }
 
         return changes;
     };
 
-    const addCommentToJob = async (jobRef, changesSummary) => {
+    const addCommentToJob = async (jobRef: DocumentReference, changesSummary: Change[]) => {
         const commentsCollectionRef = collection(jobRef, 'comments');
         const commentRef = doc(commentsCollectionRef);
 
@@ -75,10 +89,10 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }) {
         }
     };
 
-    const generateChangeComments = (changesSummary) => {
-        const changeComments = [];
+    const generateChangeComments = (changesSummary: Change[]) => {
+        const changeComments: Array<string> = [];
 
-        changesSummary.forEach((change) => {
+        changesSummary.forEach((change: Change) => {
             const { field, oldValue, newValue } = change;
 
             // Capitalize the first letter of the field name
@@ -99,13 +113,16 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }) {
         setChangesSummary(changes);
     }, [formData, selectedJob]);
 
-    const handleSubmit = async (e) => {
+
+
+    const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
         console.log(formData);
         try {
             const jobRef = doc(db, `live-jobs/${identifier}`);
-            await updateDoc(jobRef, formData);
+            await updateDoc(jobRef, formData as { [x: string]: string | boolean | undefined });
             setSelectedJob(formData);
+            setFormData(null);
             setShowEditJobModal(false);
             await addCommentToJob(jobRef, changesSummary);
             setChangesSummary([]);
@@ -120,8 +137,8 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }) {
                 <Modal.Header closeButton>
                     <Modal.Title>Edit a Job</Modal.Title>
                 </Modal.Header>
-                <Modal.Header>Created: {selectedJob.added}</Modal.Header>
-                <Modal.Header>Reference: {selectedJob.reference}</Modal.Header>
+                <Modal.Header>Created: {selectedJob?.added}</Modal.Header>
+                <Modal.Header>Reference: {selectedJob?.reference}</Modal.Header>
                 <Modal.Body>
                     <Form>
                         <Form.Group className="mb-3" controlId="name">
@@ -129,34 +146,34 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }) {
                             <Form.Control
                                 name='name'
                                 type="text"
-                                defaultValue={selectedJob.name}
+                                defaultValue={selectedJob?.name}
                                 autoFocus
-                                onChange={handleChange}
+                                onChange={handleInputChange}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="date">
                             <Form.Label>Start</Form.Label>
                             <Form.Control
-                                name='start'
+                                name='date'
                                 type="datetime-local"
-                                defaultValue={selectedJob.start}
+                                defaultValue={selectedJob?.date}
                                 autoFocus
-                                onChange={handleChange}
+                                onChange={handleInputChange}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="timeframe">
                             <Form.Label>Estimated Completion</Form.Label>
                             <Form.Control
-                                name='complete'
+                                name='timeframe'
                                 type="datetime-local"
-                                defaultValue={selectedJob.complete}
+                                defaultValue={selectedJob?.timeframe}
                                 autoFocus
-                                onChange={handleChange}
+                                onChange={handleInputChange}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="priority">
                             <Form.Label>Priority</Form.Label>
-                            <Form.Select name='priority' onChange={handleChange} required autoFocus defaultValue={selectedJob.priority}>
+                            <Form.Select name='priority' onChange={handleSelectChange} required autoFocus defaultValue={selectedJob?.priority}>
                                 <option value='Low'>Low</option>
                                 <option value='Medium'>Medium</option>
                                 <option value='High'>High</option>
@@ -171,9 +188,9 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }) {
                             <Form.Control
                                 name='area'
                                 as="textarea"
-                                defaultValue={selectedJob.area}
+                                defaultValue={selectedJob?.area}
                                 rows={1}
-                                onChange={handleChange}
+                                onChange={handleInputChange}
                             />
                         </Form.Group>
                         <Form.Group
@@ -184,9 +201,9 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }) {
                             <Form.Control
                                 name='description'
                                 as="textarea"
-                                defaultValue={selectedJob.description}
+                                defaultValue={selectedJob?.description}
                                 rows={3}
-                                onChange={handleChange} />
+                                onChange={handleInputChange} />
                         </Form.Group>
                         <Form.Group
                             className="mb-3"
@@ -196,9 +213,9 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }) {
                             <Form.Control
                                 name='contractor'
                                 as="textarea"
-                                defaultValue={selectedJob.contractor}
+                                defaultValue={selectedJob?.contractor}
                                 rows={1}
-                                onChange={handleChange} />
+                                onChange={handleInputChange} />
                         </Form.Group>
                     </Form>
                 </Modal.Body>

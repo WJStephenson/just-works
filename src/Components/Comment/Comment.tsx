@@ -1,7 +1,16 @@
 import React from 'react'
 import Card from 'react-bootstrap/Card';
 
-function Comment({ commentObject }) {
+type CommentProps = {
+  commentObject: {
+    comment: string;
+    user: string;
+    time: string;
+    date: string;
+  }
+}
+
+function Comment({ commentObject }: CommentProps) {
   return (
     <Card>
       <Card.Body>

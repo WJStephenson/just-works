@@ -17,25 +17,36 @@ function MyCalendar() {
         }
     );
 
-    const [events, setEvents] = useState([]);
+    const [events, setEvents] = useState<EventItem[]>([]);
+
+    interface EventItem {
+        title: string;
+        start: Date;
+        end: Date;
+    }
 
     useEffect(() => {
         if (value) {
-            const allEvents = [];
+            const allEvents: EventItem[] = [];
 
             value.docs.forEach((doc) => {
                 const job = doc.data();
 
                 // If the job is recurring, create recurring events
                 if (job.isRecurring) {
-                    const recurrenceEvents = createRecurringEvents(job);
+                    const recurrenceEvents = createRecurringEvents({
+                        start: job.date,
+                        complete: job.timeframe,
+                        recurrenceFrequency: job.recurrenceFrequency,
+                        name: job.name,
+                    });
                     allEvents.push(...recurrenceEvents);
                 } else {
                     // If it's not recurring, create a single event
                     const singleEvent = {
                         title: job.name,
-                        start: new Date(`${job.startDate}T${job.start}`),
-                        end: new Date(`${job.complete}T${job.completeTime}`),
+                        start: job.date,
+                        end: job.timeframe,
                     };
                     allEvents.push(singleEvent);
                 }
@@ -44,16 +55,21 @@ function MyCalendar() {
         }
     }, [value]);
 
-    const createRecurringEvents = (job) => {
+    const createRecurringEvents = (job: { // Specify the type for the 'job' parameter
+        start: string,
+        complete: string,
+        recurrenceFrequency: string,
+        name: string,
+    }) => {
         const recurrenceStartDateTime = moment(`${job.start}`);
         const recurrenceEndDateTime = moment(`${job.complete}`);
         const maxSchedulingDate = moment(recurrenceStartDateTime).add(12, 'months'); // Limit scheduling to the next 12 months
         const recurrenceFrequency = job.recurrenceFrequency;
-    
+
         const recurringEvents = [];
         const currentDateTime = moment(recurrenceStartDateTime);
         const currentEndDateTime = moment(recurrenceEndDateTime);
-    
+
         while (currentDateTime.isBefore(maxSchedulingDate)) {
             recurringEvents.push({
                 title: job.name,
@@ -82,7 +98,7 @@ function MyCalendar() {
                 currentEndDateTime.add(1, 'year');
             }
         }
-    
+
         return recurringEvents;
     };
 

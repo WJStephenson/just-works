@@ -10,8 +10,15 @@ import ModalContext from '../../Context/ModalContext';
 import CompleteJobModal from '../CompleteJobModal/CompleteJobModal';
 import DeleteJobModal from '../DeleteJobModal/DeleteJobModal';
 import EditJobModal from '../EditJobModal/EditJobModal';
+import { Job } from '../../Pages/Homepage/Homepage';
 
-function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
+interface SelectedJobProps {
+    selectedJob: Job | null;
+    setSelectedJob: React.Dispatch<React.SetStateAction<Job | null>>;
+    identifier: string;
+}
+
+function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobProps) {
 
     const [formData, setFormData] = useState({
         comment: '',
@@ -33,7 +40,8 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
 
 
     useEffect(() => {
-        setOnHold(selectedJob?.onHold);
+        selectedJob &&
+            setOnHold(selectedJob.onHold);
     }, [selectedJob])
 
 
@@ -67,7 +75,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
         }
     };
 
-    const handleFormChange = () => (e) => {
+    const handleFormChange = () => (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         const { name, value } = e.target;
 
@@ -77,7 +85,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
         });
     };
 
-    const handleFormSubmit = (e) => {
+    const handleFormSubmit = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
 
         const sendData = async () => {
@@ -111,10 +119,13 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
         <div className='selectedjob-container'>
             <div className='buttons-container'>
                 {
+
                     onHold === true ?
-                        <Button variant="warning" onClick={() => handleHoldJob(selectedJob?.reference)}>Unhold</Button>
+                        selectedJob &&
+                        <Button variant="warning" onClick={() => handleHoldJob(selectedJob.reference)}>Unhold</Button>
                         :
-                        <Button variant="warning" onClick={() => handleHoldJob(selectedJob?.reference)}>Hold</Button>
+                        selectedJob &&
+                        <Button variant="warning" onClick={() => handleHoldJob(selectedJob.reference)}>Hold</Button>
                 }
                 <div className='buttons-right'>
                     <Button variant="success" onClick={() => setShowCompleteModal(true)}>Complete</Button>
@@ -143,7 +154,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }) {
                     <Form.Label>Add a comment</Form.Label>
                     <Form.Control type="text" placeholder="Comment..." name='comment' onChange={handleFormChange()} />
                 </Form.Group>
-                <Button variant="primary" type="submit" onClick={handleFormSubmit}>
+                <Button variant="primary" type="submit" onClick={() => handleFormSubmit}>
                     Add Comment
                 </Button>
             </Form>

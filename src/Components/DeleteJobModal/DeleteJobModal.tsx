@@ -4,8 +4,14 @@ import { Modal } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import ModalContext from '../../Context/ModalContext';
 import { useContext } from 'react';
+import { Job } from '../../Pages/Homepage/Homepage';
 
-function DeleteJobModal({ selectedJob, setSelectedJob }) {
+type DeleteJobModalProps = {
+    selectedJob: Job;
+    setSelectedJob: React.Dispatch<React.SetStateAction<Job>>;
+}
+
+function DeleteJobModal({ selectedJob, setSelectedJob }: DeleteJobModalProps) {
 
     const { showDeleteModal, setShowDeleteModal } = useContext(ModalContext);
 
@@ -25,7 +31,7 @@ function DeleteJobModal({ selectedJob, setSelectedJob }) {
                     console.error('Error deleting document: ', error);
                 }
             });
-            setSelectedJob('');
+            setSelectedJob(null);
             setShowDeleteModal(false);
         } catch (error) {
             console.error('Error querying documents: ', error);
@@ -42,14 +48,17 @@ function DeleteJobModal({ selectedJob, setSelectedJob }) {
                 </Modal.Header>
 
                 <Modal.Body>
-                    <h2>{selectedJob.name}</h2>
+                    <h2>{selectedJob?.name}</h2>
                     <p>Are you sure you want to delete this job? </p>
                     <p><strong>Once deleted it cannot be restored.</strong></p>
                 </Modal.Body>
 
                 <Modal.Footer>
                     <Button variant="primary" onClick={() => setShowDeleteModal(false)}>Close</Button>
-                    <Button variant="danger" onClick={() =>handleDeleteJob(selectedJob?.reference)}>Delete</Button>
+                    {
+                        selectedJob?.reference &&
+                        <Button variant="danger" onClick={() => handleDeleteJob(selectedJob.reference)}>Delete</Button>
+                    }
                 </Modal.Footer>
             </Modal>
         </div>

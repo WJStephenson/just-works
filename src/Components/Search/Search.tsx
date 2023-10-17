@@ -6,11 +6,17 @@ import { BiLogOut } from "react-icons/bi";
 import ModalContext from "../../Context/ModalContext";
 import Button from 'react-bootstrap/Button'
 import { auth } from "../../Config/firebaseConfig";
+import { useSignOut } from "react-firebase-hooks/auth";
 
-function Search({ signOut, setIsLoggedIn }) {
+type SearchProps = {
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+function Search({ setIsLoggedIn }: SearchProps) {
 
   const { setShowAddModal } = useContext(ModalContext);
   const [userInitials, setUserInitials] = useState('');
+  const [signOut] = useSignOut(auth);
 
   const navigate = useNavigate();
 
@@ -40,7 +46,9 @@ function Search({ signOut, setIsLoggedIn }) {
       <Link to={'/analytics'} title="Analytics"><FaChartBar /></Link>
       <Link to={'/settings'} title="Settings"><FaCog /></Link>
 
-      <div className='user' title={user?.displayName}>{userInitials}L</div>
+      <div className='user' title={user?.displayName ?? ''}>
+        {userInitials}
+      </div>
       <Button onClick={logOut} title="Sign out"><BiLogOut /></Button>
     </div>
   )

@@ -4,8 +4,6 @@ import Search from './Components/Search/Search';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ModalContextProvider } from './Context/ModalContext';
 import CompletedJobs from './Pages/CompletedJobs/CompletedJobs';
-import { useSignInWithGoogle, useSignOut } from 'react-firebase-hooks/auth';
-import { auth } from './Config/firebaseConfig';
 import Login from './Pages/Login/Login';
 import './App.css';
 import { useState } from 'react';
@@ -14,17 +12,7 @@ import Analytics from './Pages/Analytics/Analytics';
 import Settings from './Pages/Settings/Settings';
 
 function App() {
-  const [signOut] = useSignOut(auth);
-  const [signInWithGoogle, error, loading, user] = useSignInWithGoogle(auth);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const signIn = async () => {
-    const success = await signInWithGoogle();
-    if(success) {
-      console.log('Signed in')
-      setIsLoggedIn(true);
-    }
-  }
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   return (
     <BrowserRouter>
@@ -32,14 +20,14 @@ function App() {
         <div className='app-container'>
           {
             isLoggedIn &&
-            <Search signOut={signOut} setIsLoggedIn={setIsLoggedIn}/>
+            <Search setIsLoggedIn={setIsLoggedIn}/>
           }
           <Routes>
             <Route path="/" element={isLoggedIn ? (<Homepage />) : (<Navigate to={isLoggedIn ? '/' : "/login"} />)} />
             <Route path="/completed" element={isLoggedIn ? (<CompletedJobs />) : (<Navigate to={isLoggedIn ? 'complete' : "/login"} />)} />
             <Route path='/calendar' element={isLoggedIn ? (<MyCalendar />) : (<Navigate to={isLoggedIn ? 'calendar' : "/login"} />)} />
             <Route path='/analytics' element={isLoggedIn ? (<Analytics />) : (<Navigate to={isLoggedIn ? 'analytics' : "/login"} />)} />
-            <Route path="/login" element={isLoggedIn ? (<Navigate to="/" />) : (<Login signInWithGoogle={signIn} loading={loading} error={error} setIsLoggedIn={setIsLoggedIn} />)} />
+            <Route path="/login" element={isLoggedIn ? (<Navigate to="/" />) : (<Login setIsLoggedIn={setIsLoggedIn} />)} />
             <Route path="/settings" element={isLoggedIn ? (<Settings />) : (<Navigate to={isLoggedIn ? 'settings' : "/login"} />)} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

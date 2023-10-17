@@ -15,21 +15,20 @@ function AddJobModal() {
         name: '',
         area: '',
         contractor: '',
-        start: '',
-        complete: '',
+        date: '',
+        timeframe: '',
         description: '',
         reported_by: '',
         reference: '',
         priority: 'low', //default to low
-        time: '',
         onHold: false,
         isRecurring: false,
         recurrenceFrequency: 'daily', // Default to monthly
         added: new Date().toLocaleDateString(),
     });
 
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value, type, checked } = e.target as HTMLInputElement;
 
         if (type === 'checkbox') {
             setFormData({
@@ -44,7 +43,7 @@ function AddJobModal() {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
         const finalFormData = {
@@ -110,7 +109,7 @@ function AddJobModal() {
                         <Form.Group className="mb-3" controlId="date">
                             <Form.Label>Start</Form.Label>
                             <Form.Control
-                                name='start'
+                                name='date'
                                 type="datetime-local"
                                 autoFocus
                                 onChange={handleChange}
@@ -119,7 +118,7 @@ function AddJobModal() {
                         <Form.Group className="mb-3" controlId="timeframe">
                             <Form.Label>Estimated Completion</Form.Label>
                             <Form.Control
-                                name='complete'
+                                name='timeframe'
                                 type="datetime-local"
                                 autoFocus
                                 onChange={handleChange}

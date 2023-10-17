@@ -1,7 +1,22 @@
 import Card from 'react-bootstrap/Card';
 import Accordion from 'react-bootstrap/Accordion';
 
-function CompletedJobCard({ job }) {
+type CompletedJobCardProps = {
+    job: {
+        name: string;
+        area: string;
+        description: string;
+        contractor: string;
+        priority: string;
+        added: string;
+        start: string;
+        complete: string;
+        reported_by: string;
+        reference: string;
+    }
+}
+
+function CompletedJobCard({ job }: CompletedJobCardProps) {
 
     return (
         <Accordion.Item eventKey={job.reference} key={job.reference} >

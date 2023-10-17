@@ -1,19 +1,27 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import ModalContext from '../../Context/ModalContext';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { addDoc, collection, deleteDoc, doc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../Config/firebaseConfig';
+import { Job } from '../../Pages/Homepage/Homepage';
 
-function CompleteJobModal({ selectedJob, setSelectedJob }) {
+type CompleteJobModalProps = {
+    selectedJob: Job;
+    setSelectedJob: React.Dispatch<React.SetStateAction<Job>>;
+}
+
+function CompleteJobModal({ selectedJob, setSelectedJob }: CompleteJobModalProps) {
 
     const { showCompleteModal, setShowCompleteModal } = useContext(ModalContext);
 
     const handleCompleteJob = async () => {
         await addDoc(collection(db, "completed-jobs"), selectedJob)
         setShowCompleteModal(false);
-        setSelectedJob('');
-        handleDeleteJob(selectedJob.reference);
+        setSelectedJob(null);
+        if (selectedJob?.reference){
+            handleDeleteJob(selectedJob.reference);
+        }
     }
 
     const handleDeleteJob = async (reference: string) => {
@@ -32,7 +40,7 @@ function CompleteJobModal({ selectedJob, setSelectedJob }) {
                     console.error('Error deleting document: ', error);
                 }
             });
-            setSelectedJob('');
+            setSelectedJob(null);
         } catch (error) {
             console.error('Error querying documents: ', error);
         }
@@ -50,7 +58,7 @@ function CompleteJobModal({ selectedJob, setSelectedJob }) {
                 </Modal.Header>
 
                 <Modal.Body>
-                    <h2>{selectedJob.name}</h2>
+                    <h2>{selectedJob?.name}</h2>
                     <p>Are you sure you want to complete this job? </p>
                     <p><strong>Once complete it cannot be reopened.</strong></p>
                 </Modal.Body>
