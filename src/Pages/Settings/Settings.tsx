@@ -1,21 +1,13 @@
-import './Settings.css'
+import './Settings.css';
 
 function Settings() {
-
     document.title = 'Just Works | Settings';
-
-    // const [contractors, setContractors] = useState([])
-    // const [areas, setAreas] = useState([])
-    // const [equipment, setEquipment] = useState([])
-
 
     return (
         <div>
-            <h1>Settings</h1>
-            
-
+            Coming Soon...
         </div>
-    )
+    );
 }
 
-export default Settings
+export default Settings;

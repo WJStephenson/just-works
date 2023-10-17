@@ -9,9 +9,10 @@ type JobCardProps = {
     setSelectedJob: React.Dispatch<React.SetStateAction<Job | null>>,
     identifier: string,
     setIdentifier: React.Dispatch<React.SetStateAction<string>>,
+    index: string
 }
 
-function JobCard({ job, setSelectedJob, identifier, setIdentifier } : JobCardProps) {
+function JobCard({ job, setSelectedJob, identifier, setIdentifier, index } : JobCardProps) {
 
     const handleClick = () => {
         setSelectedJob(job);
@@ -19,8 +20,7 @@ function JobCard({ job, setSelectedJob, identifier, setIdentifier } : JobCardPro
     }
 
     return (
-        <Accordion defaultActiveKey="1">
-            <Accordion.Item eventKey="0" key={job?.reference}>
+            <Accordion.Item eventKey={index} key={job?.reference}>
                 <Accordion.Header className='accordion-header'>
                     {job?.name}
                     <div className='accordion-icons'>
@@ -48,14 +48,13 @@ function JobCard({ job, setSelectedJob, identifier, setIdentifier } : JobCardPro
                     <Card key={job?.reference} className="job-card">
                         <Card.Body>
                             <Card.Text>{job?.description}</Card.Text>
-                            <Card.Text>{job?.date}</Card.Text>
-                            <Card.Text>{job?.timeframe}</Card.Text>
+                            <Card.Text>Start: {job?.date}</Card.Text>
+                            <Card.Text>Complete: {job?.timeframe}</Card.Text>
                             <Button variant="primary" onClick={handleClick}>View</Button>
                         </Card.Body>
                     </Card>
                 </Accordion.Body>
             </Accordion.Item>
-        </Accordion>
     );
 }
 

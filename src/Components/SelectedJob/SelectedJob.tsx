@@ -22,8 +22,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
 
     const [formData, setFormData] = useState({
         comment: '',
-        date: new Date().toLocaleDateString(),
-        time: new Date().toLocaleTimeString(),
+        datetime: new Date().toISOString(),
         user: auth.currentUser?.displayName
     });
 
@@ -38,12 +37,9 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
 
     const [onHold, setOnHold] = useState<boolean>(false);
 
-
     useEffect(() => {
-        selectedJob &&
-            setOnHold(selectedJob.onHold);
-    }, [selectedJob])
-
+        selectedJob && setOnHold(selectedJob.onHold);
+    }, [selectedJob]);
 
     const handleHoldJob = async (reference: string) => {
         console.log(reference);
@@ -85,7 +81,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
         });
     };
 
-    const handleFormSubmit = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFormSubmit = (e: React.MouseEvent) => {
         e.preventDefault();
 
         const sendData = async () => {
@@ -112,14 +108,16 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
             }
         };
         sendData();
+        setFormData({
+            ...formData,
+            comment: ''
+        });
     }
-
 
     return (
         <div className='selectedjob-container'>
             <div className='buttons-container'>
                 {
-
                     onHold === true ?
                         selectedJob &&
                         <Button variant="warning" onClick={() => handleHoldJob(selectedJob.reference)}>Unhold</Button>
@@ -135,55 +133,69 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
             </div>
             <div>
                 <div className='priority-ref'>
-                    <p>Priority: {selectedJob?.priority}</p>
+                    <p className='capitalize'>Priority: {selectedJob?.priority}</p>
+                    {
+                        selectedJob?.isRecurring &&
+                        <p className='capitalize'>Frequency: {selectedJob.recurrenceFrequency}</p>
+                    }
                     <p>Ref: {selectedJob?.reference}</p>
                 </div>
                 <h1>{selectedJob?.name}</h1>
                 <h2>{selectedJob?.area}</h2>
-                <p>Raised: {selectedJob?.date}, {selectedJob?.time}</p>
-                <p>Completion By: {selectedJob?.timeframe}</p>
-                <p>{selectedJob?.contractor}</p>
-                <h3>{selectedJob?.description}</h3>
+                <h5>{selectedJob?.description}</h5>
+                <p>Start: {selectedJob?.date}</p>
+                <p>Completion: {selectedJob?.timeframe}</p>
+                <p>Contractor: {selectedJob?.contractor}</p>
                 <p>Reported By: {selectedJob?.reported_by}</p>
             </div>
 
-            <h2>Comments:</h2>
-
-            <Form>
-                <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Add a comment</Form.Label>
-                    <Form.Control type="text" placeholder="Comment..." name='comment' onChange={handleFormChange()} />
-                </Form.Group>
-                <Button variant="primary" type="submit" onClick={() => handleFormSubmit}>
-                    Add Comment
-                </Button>
-            </Form>
             <div className='comments-container'>
+                <h2>Comments:</h2>
+                <Form>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                        <Form.Label>Add a comment</Form.Label>
+                        <Form.Control type="text" placeholder="Comment..." name='comment' value={formData.comment} onChange={handleFormChange()} />
+                    </Form.Group>
+                    <Button variant="primary" type="submit" onClick={handleFormSubmit}>
+                        Add Comment
+                    </Button>
+                </Form>
                 {error && <strong>Error: {JSON.stringify(error)}</strong>}
                 {loading && <span>Loading Comments...</span>}
                 {value && (
                     <>
-                        {value.docs.map((doc) => (
-                            <>
+                        {value.docs
+                            .map((doc) => ({
+                                id: doc.id,
+                                comment: doc.data().comment,
+                                user: doc.data().user,
+                                datetime: doc.data().datetime,
+                            }))
+                            .sort((a, b) => {
+                                // Sort in ascending order (oldest to newest)
+                                return new Date(a.datetime).getTime() - new Date(b.datetime).getTime();
+                            })
+                            .map((comment) => (
                                 <Comment
-                                    key={doc.id}
+                                    key={comment.id}
                                     commentObject={{
-                                        comment: doc.data().comment,
-                                        user: doc.data().user,
-                                        time: doc.data().time,
-                                        date: doc.data().date,
+                                        comment: comment.comment,
+                                        user: comment.user,
+                                        datetime: comment.datetime,
                                     }}
                                 />
-                            </>
-                        ))}
+                            ))
+                        }
                     </>
                 )}
             </div>
-            <CompleteJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} />
-            <DeleteJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} />
-            <EditJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} identifier={identifier} />
+            <div className='modals'>
+                <CompleteJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} />
+                <DeleteJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} />
+                <EditJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} identifier={identifier} />
+            </div>
         </div>
     )
 }
 
-export default SelectedJob
+export default SelectedJob;

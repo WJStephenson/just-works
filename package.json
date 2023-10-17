@@ -22,6 +22,7 @@
     "react-modal": "^3.16.1",
     "react-router": "^6.16.0",
     "react-router-dom": "^6.16.0",
+    "react-select": "^5.7.7",
     "recharts": "^2.8.0"
   },
   "devDependencies": {

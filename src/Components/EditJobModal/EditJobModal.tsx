@@ -120,7 +120,7 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }: EditJobModalP
         console.log(formData);
         try {
             const jobRef = doc(db, `live-jobs/${identifier}`);
-            await updateDoc(jobRef, formData as { [x: string]: string | boolean | undefined });
+            await updateDoc(jobRef, formData as { [x: string]: string | boolean | undefined | string[]; });
             setSelectedJob(formData);
             setFormData(null);
             setShowEditJobModal(false);

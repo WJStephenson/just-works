@@ -9,7 +9,8 @@ import ModalContext from '../../Context/ModalContext';
 
 function AddJobModal() {
     const { showAddModal, setShowAddModal } = useContext(ModalContext);
-    const handleClose = () => setShowAddModal(false);
+
+    const [validated, setValidated] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -27,6 +28,12 @@ function AddJobModal() {
         added: new Date().toLocaleDateString(),
     });
 
+
+    const handleClose = () => {
+        setValidated(false);
+        setShowAddModal(false)
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type, checked } = e.target as HTMLInputElement;
 
@@ -42,8 +49,8 @@ function AddJobModal() {
             });
         }
     };
-
-    const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // React.MouseEvent<HTMLButtonElement>
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const finalFormData = {
@@ -51,19 +58,38 @@ function AddJobModal() {
             reference: formData.reference.trim() === '' ? nanoid() : formData.reference,
         };
 
-        console.log(finalFormData);
+        const form = e.currentTarget;
+        if (form.checkValidity() === true) {
 
-        const sendData = async () => {
-            try {
-                const docRef = await addDoc(collection(db, 'live-jobs'), finalFormData);
-                console.log('Document written with ID: ', docRef.id, finalFormData);
-            } catch (e) {
-                console.error('Error adding document: ', e);
-            }
-        };
-
-        sendData();
-        setShowAddModal(false);
+            const sendData = async () => {
+                try {
+                    const docRef = await addDoc(collection(db, 'live-jobs'), finalFormData);
+                    console.log('Document written with ID: ', docRef.id, finalFormData);
+                } catch (e) {
+                    console.error('Error adding document: ', e);
+                }
+            };
+            sendData();
+            setShowAddModal(false);
+            setValidated(false);
+            setFormData({
+                name: '',
+                area: '',
+                contractor: '',
+                date: '',
+                timeframe: '',
+                description: '',
+                reported_by: '',
+                reference: '',
+                priority: 'low', //default to low
+                onHold: false,
+                isRecurring: false,
+                recurrenceFrequency: 'daily', // Default to monthly
+                added: new Date().toLocaleDateString(),
+            });
+        } else {
+            setValidated(true);
+        }
     };
 
     return (
@@ -73,12 +99,13 @@ function AddJobModal() {
                     <Modal.Title>Add a Job</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form>
+                    <Form noValidate validated={validated} onSubmit={handleSubmit}>
                         <Form.Group className="mb-3" controlId="name">
                             <Form.Label>Name this Job</Form.Label>
                             <Form.Control
                                 name='name'
                                 type="text"
+                                required
                                 autoFocus
                                 onChange={handleChange}
                             />
@@ -111,7 +138,7 @@ function AddJobModal() {
                             <Form.Control
                                 name='date'
                                 type="datetime-local"
-                                autoFocus
+                                required
                                 onChange={handleChange}
                             />
                         </Form.Group>
@@ -120,68 +147,57 @@ function AddJobModal() {
                             <Form.Control
                                 name='timeframe'
                                 type="datetime-local"
-                                autoFocus
+                                required
                                 onChange={handleChange}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="priority">
                             <Form.Label>Priority</Form.Label>
-                            <Form.Select name='priority' onChange={handleChange} required autoFocus>
+                            <Form.Select name='priority' onChange={handleChange} required>
                                 <option value='Low'>Low</option>
                                 <option value='Medium'>Medium</option>
                                 <option value='High'>High</option>
                                 <option value='Urgent'>Urgent</option>
                             </Form.Select>
                         </Form.Group>
-                        <Form.Group
-                            className="mb-3"
-                            controlId="area"
-                        >
+                        <Form.Group className="mb-3" controlId="area">
                             <Form.Label>Area</Form.Label>
                             <Form.Control
                                 name='area'
                                 as="textarea"
+                                required
                                 rows={1}
                                 onChange={handleChange}
                             />
                         </Form.Group>
-                        <Form.Group
-                            className="mb-3"
-                            controlId="description"
-                        >
+                        <Form.Group className="mb-3" controlId="description">
                             <Form.Label>Description</Form.Label>
                             <Form.Control
                                 name='description'
                                 as="textarea"
+                                required
                                 rows={3}
                                 onChange={handleChange} />
                         </Form.Group>
-                        <Form.Group
-                            className="mb-3"
-                            controlId="contractor"
-                        >
+                        <Form.Group className="mb-3" controlId="contractor">
                             <Form.Label>Contractor</Form.Label>
                             <Form.Control
                                 name='contractor'
                                 as="textarea"
                                 rows={1}
+                                required
                                 onChange={handleChange} />
                         </Form.Group>
-                        <Form.Group
-                            className="mb-3"
-                            controlId="reported_by"
-                        >
+                        <Form.Group className="mb-3" controlId="reported_by" >
                             <Form.Label>Reported By</Form.Label>
                             <Form.Control
                                 name='reported_by'
                                 as="textarea"
                                 rows={1}
+                                required
                                 onChange={handleChange} />
                         </Form.Group>
-                        <Form.Group
-                            className="mb-3"
-                            controlId="reference"
-                        >
+                        <Form.Group className="mb-3" controlId="reference" >
                             <Form.Label>Job ID</Form.Label>
                             <Form.Control
                                 name='reference'
@@ -190,16 +206,16 @@ function AddJobModal() {
                                 placeholder='Leave blank to auto-generate'
                                 onChange={handleChange} />
                         </Form.Group>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={handleClose}>
+                                Close
+                            </Button>
+                            <Button variant="primary" type='submit'>
+                                Save Changes
+                            </Button>
+                        </Modal.Footer>
                     </Form>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button variant="primary" onClick={handleSubmit}>
-                        Save Changes
-                    </Button>
-                </Modal.Footer>
             </Modal>
         </>
     );
