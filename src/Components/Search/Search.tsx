@@ -22,7 +22,6 @@ function Search({ setIsLoggedIn }: SearchProps) {
   const logOut = async () => {
     const success = await signOut();
     if (success) {
-      console.log('Signed out')
       setIsLoggedIn(false);
       navigate('/login')
     } // Navigate to the login page after signing out

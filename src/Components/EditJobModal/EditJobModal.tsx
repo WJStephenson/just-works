@@ -38,6 +38,13 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }: EditJobModalP
         }
     );
 
+    const [contractorValues] = useCollection(
+        collection(db, 'contractors'),
+        {
+            snapshotListenOptions: { includeMetadataChanges: true },
+        }
+    );
+
     const handleClose = () => setShowEditJobModal(false);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -94,7 +101,6 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }: EditJobModalP
         };
         try {
             await setDoc(commentRef, commentData);
-            console.log('Comment added successfully');
         } catch (error) {
             console.error('Error adding comment: ', error);
         }
@@ -154,10 +160,34 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }: EditJobModalP
         });
     };
 
+    const handleContractorSelectChange = (newValue: MultiValue<Option>) => {
+        const selectedOptions = newValue;
+        const selectedValues = selectedOptions.map(option => option.value);
+        const selectedValuesString = selectedValues.join(', ');
+
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData ?? {},
+                area: prevFormData?.area ?? '',
+                name: prevFormData?.name ?? '',
+                date: prevFormData?.date,
+                timeframe: prevFormData?.timeframe,
+                contractor: selectedValuesString,
+                description: prevFormData?.description,
+                reported_by: prevFormData?.reported_by,
+                reference: prevFormData?.reference,
+                priority: prevFormData?.priority,
+                onHold: prevFormData?.onHold,
+                isRecurring: prevFormData?.isRecurring,
+                recurrenceFrequency: prevFormData?.recurrenceFrequency,
+                added: prevFormData?.added,
+            } as Job;
+        });
+    };
+
 
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
-        console.log(formData);
         try {
             const jobRef = doc(db, `live-jobs/${identifier}`);
             await updateDoc(jobRef, formData as { [x: string]: string | boolean | undefined | string[]; });
@@ -259,12 +289,23 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }: EditJobModalP
                             controlId="contractor"
                         >
                             <Form.Label>Contractor</Form.Label>
-                            <Form.Control
-                                name='contractor'
-                                as="textarea"
-                                defaultValue={selectedJob?.contractor}
-                                rows={1}
-                                onChange={handleInputChange} />
+                            <Select
+                                isMulti
+                                onChange={handleContractorSelectChange}
+                                name="contractor"
+                                options={contractorValues?.docs.map((doc) => ({
+                                    value: doc.data().name,
+                                    label: doc.data().name,
+                                }))
+                                }
+                                className="basic-multi-select"
+                                classNamePrefix="select"
+                                defaultValue={selectedJob?.contractor.split(', ').map((contractor) => ({
+                                    value: contractor,
+                                    label: contractor,
+                                }))
+                                }
+                            />
                         </Form.Group>
                     </Form>
                 </Modal.Body>

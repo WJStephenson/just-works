@@ -45,7 +45,6 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
     }, [selectedJob]);
 
     const handleHoldJob = async (reference: string) => {
-        console.log(reference);
         const jobs = collection(db, 'live-jobs');
         const q = query(jobs, where('reference', '==', reference));
 
@@ -63,8 +62,6 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
 
                     // Update the local state 'onHold' to match the updated value
                     setOnHold(updatedOnHold);
-
-                    console.log('Document successfully edited!');
                 } catch (error) {
                     console.error('Error editing doc', error);
                 }
@@ -91,7 +88,6 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
             return;
         }
         setValidate(false);
-        console.log(formData);
 
         const sendData = async () => {
             try {
@@ -107,7 +103,6 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
                         const commentRef = doc(commentsCollectionRef);
 
                         await setDoc(commentRef, formData);
-                        console.log('Document successfully written!');
                     } catch (error) {
                         console.error('Error writing document: ', error);
                     }
@@ -181,8 +176,8 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
                                 datetime: doc.data().datetime,
                             }))
                             .sort((a, b) => {
-                                // Sort in ascending order (oldest to newest)
-                                return new Date(a.datetime).getTime() - new Date(b.datetime).getTime();
+                                // Sort in descending order (newest to oldest)
+                                return new Date(b.datetime).getTime() - new Date(a.datetime).getTime();
                             })
                             .map((comment) => (
                                 <Comment
@@ -198,7 +193,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
                     </>
                 )}
             </div>
-            <div className='modals'>
+            <div className='modals'></div>
                 <CompleteJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} />
                 <DeleteJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} />
                 <EditJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} identifier={identifier} />

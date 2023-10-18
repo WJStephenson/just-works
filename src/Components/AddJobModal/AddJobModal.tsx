@@ -12,6 +12,7 @@ import { useCollection } from 'react-firebase-hooks/firestore';
 type Option = {
     label: string;
     value: string;
+    name: string;
 };
 
 function AddJobModal() {
@@ -42,6 +43,13 @@ function AddJobModal() {
         }
     );
 
+    const [contractorValues] = useCollection(
+        collection(db, 'contractors'),
+        {
+            snapshotListenOptions: { includeMetadataChanges: true },
+        }
+    );
+
 
     const handleClose = () => {
         setValidated(false);
@@ -64,18 +72,26 @@ function AddJobModal() {
         }
     };
 
-    
+
 
     const handleSelectChange = (newValue: MultiValue<Option>) => {
         const selectedOptions = newValue;
         const selectedValues = selectedOptions.map(option => option.value);
         const selectedValuesString = selectedValues.join(', ');
-    
-        setFormData({
-            ...formData,
-            area: selectedValuesString,
-        });
-        console.log(selectedValuesString);
+
+
+        if (newValue[0].name === 'contractor') {
+            setFormData({
+                ...formData,
+                contractor: selectedValuesString,
+            });
+        }
+        if (newValue[0].name === 'area') {
+            setFormData({
+                ...formData,
+                area: selectedValuesString,
+            });
+        }
     };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -197,18 +213,12 @@ function AddJobModal() {
                                 options={areaValues?.docs.map((doc) => ({
                                     value: doc.data().name,
                                     label: doc.data().name,
+                                    name: 'area',
                                 }))
                                 }
                                 className="basic-multi-select"
                                 classNamePrefix="select"
                             />
-                            {/* <Form.Control
-                                name='area'
-                                as="textarea"
-                                required
-                                rows={1}
-                                onChange={handleChange}
-                            /> */}
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="description">
                             <Form.Label>Description</Form.Label>
@@ -221,12 +231,19 @@ function AddJobModal() {
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="contractor">
                             <Form.Label>Contractor</Form.Label>
-                            <Form.Control
-                                name='contractor'
-                                as="textarea"
-                                rows={1}
-                                required
-                                onChange={handleChange} />
+                            <Select
+                                isMulti
+                                onChange={handleSelectChange}
+                                name="contractor"
+                                options={contractorValues?.docs.map((doc) => ({
+                                    value: doc.data().name,
+                                    label: doc.data().name,
+                                    name: 'contractor',
+                                }))
+                                }
+                                className="basic-multi-select"
+                                classNamePrefix="select"
+                            />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="reported_by" >
                             <Form.Label>Reported By</Form.Label>

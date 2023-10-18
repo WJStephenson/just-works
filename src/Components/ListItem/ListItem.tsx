@@ -17,7 +17,6 @@ function ListItem({ item, docId, collection }: ListItemProps) {
         try {
             const docRef = doc(db, collection, docId); // Assuming 'machines' is the collection name
             await deleteDoc(docRef);
-            console.log('Document deleted:', docId);
         } catch (error) {
             console.error('Error deleting document:', error);
         }

@@ -55,7 +55,7 @@ function MyCalendar() {
         }
     }, [value]);
 
-    const createRecurringEvents = (job: { // Specify the type for the 'job' parameter
+    const createRecurringEvents = (job: { 
         start: string,
         complete: string,
         recurrenceFrequency: string,

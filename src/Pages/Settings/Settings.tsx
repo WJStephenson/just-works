@@ -37,7 +37,6 @@ function Settings() {
         const machinesRef = collection(db, 'machines');
         try {
             await sendData(machinesRef, machineName);
-            (e.currentTarget[0] as HTMLInputElement).value = '';
         }
         catch (e) {
             console.error('Error adding document:', e);
@@ -50,7 +49,6 @@ function Settings() {
         const constractorsRef = collection(db, 'contractors');
         try {
             await sendData(constractorsRef, contractorName);
-            (e.currentTarget[0] as HTMLInputElement).value = '';
         }
         catch (e) {
             console.error('Error adding document:', e);
@@ -63,7 +61,6 @@ function Settings() {
         const areasRef = collection(db, 'areas');
         try {
             await sendData(areasRef, areaName);
-            (e.currentTarget[0] as HTMLInputElement).value = '';
         }
         catch (e) {
             console.error('Error adding document:', e);
@@ -72,8 +69,7 @@ function Settings() {
 
     const sendData = async (collection: CollectionReference, name: string) => {
         try {
-            const docRef = await addDoc(collection, { name }); // Assumes 'name' is a field in the document.
-            console.log('Document written with ID:', docRef.id);
+            await addDoc(collection, { name }); // Assumes 'name' is a field in the document.
         } catch (e) {
             console.error('Error adding document:', e);
         }
@@ -87,6 +83,7 @@ function Settings() {
             <div className='settings-container'>
                 <div className='settings-machines'>
                     <h2>Machines</h2>
+                    <p><strong>Not Currently Used</strong></p>
                     <Form onSubmit={handleMachineAdd}>
                         <InputGroup className="mb-3">
                             <Form.Control
@@ -95,7 +92,7 @@ function Settings() {
                                 aria-describedby="basic-addon2"
                                 required
                             />
-                            <Button variant="success" id="button-addon2" type='submit'>
+                            <Button variant="danger" id="button-addon2" type='submit'>
                                 Add
                             </Button>
                         </InputGroup>

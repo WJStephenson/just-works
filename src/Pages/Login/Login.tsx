@@ -21,8 +21,6 @@ function Login({ setIsLoggedIn }: { setIsLoggedIn: React.Dispatch<React.SetState
         try {
             const userCredential: UserCredential | undefined = await signInWithEmailAndPassword(email, password);
             if (userCredential?.user) {
-                const user = userCredential.user;
-                console.log('Signed in as:', user.email);
                 setIsLoggedIn(true);
             }
         } catch (error) {
@@ -34,8 +32,6 @@ function Login({ setIsLoggedIn }: { setIsLoggedIn: React.Dispatch<React.SetState
         try {
             const userCredential: UserCredential | undefined = await signInWithGoogle();
             if (userCredential?.user) {
-                const user = userCredential.user;
-                console.log('Signed in as:', user.displayName || user.email);
                 setIsLoggedIn(true);
             }
         } catch (error) {

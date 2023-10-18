@@ -16,7 +16,6 @@ function DeleteJobModal({ selectedJob, setSelectedJob }: DeleteJobModalProps) {
     const { showDeleteModal, setShowDeleteModal } = useContext(ModalContext);
 
     const handleDeleteJob = async (reference: string) => {
-        console.log(reference);
         const jobs = collection(db, 'live-jobs');
         const q = query(jobs, where('reference', '==', reference));
 
@@ -26,7 +25,6 @@ function DeleteJobModal({ selectedJob, setSelectedJob }: DeleteJobModalProps) {
             querySnapshot.forEach(async (document) => {
                 try {
                     await deleteDoc(doc(db, 'live-jobs', document.id));
-                    console.log('Document successfully deleted!');
                 } catch (error) {
                     console.error('Error deleting document: ', error);
                 }
