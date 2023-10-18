@@ -1,6 +1,6 @@
 import { Button, Form, InputGroup, ListGroup } from 'react-bootstrap';
 import './Settings.css';
-import { db } from '../../Config/firebaseConfig';
+import { auth, db } from '../../Config/firebaseConfig';
 import { CollectionReference, addDoc, collection } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import ListItem from '../../Components/ListItem/ListItem';
@@ -77,7 +77,7 @@ function Settings() {
 
     return (
         <div className='settings-wrapper'>
-            <h1>Settings</h1>
+            <h1>Settings - signed in as {auth.currentUser?.email}</h1>
             <p>Add Machines, Contractors or Areas by typing the name in the relevant input area and clicking 'Add'. To remove an item, hover over it and click on the 'X' icon. </p>
             <br />
             <div className='settings-container'>

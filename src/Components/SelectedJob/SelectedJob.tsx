@@ -193,7 +193,8 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
                     </>
                 )}
             </div>
-            <div className='modals'></div>
+            <div className='modals-container'>
+                <div className='modals'></div>
                 <CompleteJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} />
                 <DeleteJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} />
                 <EditJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} identifier={identifier} />
