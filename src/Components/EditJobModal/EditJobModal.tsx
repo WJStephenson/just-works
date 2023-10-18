@@ -4,9 +4,17 @@ import ModalContext from '../../Context/ModalContext';
 import { DocumentReference, collection, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../../Config/firebaseConfig';
 import { Job } from '../../Pages/Homepage/Homepage';
+import { useCollection } from 'react-firebase-hooks/firestore';
+import { MultiValue } from 'react-select';
+import Select from 'react-select';
+
+type Option = {
+    label: string;
+    value: string;
+};
 
 type EditJobModalProps = {
-    selectedJob: Job | null;
+    selectedJob: Job;
     setSelectedJob: React.Dispatch<React.SetStateAction<Job | null>>;
     identifier: string;
 }
@@ -20,16 +28,21 @@ type Change = {
 function EditJobModal({ selectedJob, setSelectedJob, identifier }: EditJobModalProps) {
 
     const { showEditJobModal, setShowEditJobModal } = useContext(ModalContext);
+    const [changesSummary, setChangesSummary] = useState<Array<Change>>([]);
+    const [formData, setFormData] = useState<Job>(selectedJob);
+
+    const [areaValues] = useCollection(
+        collection(db, 'areas'),
+        {
+            snapshotListenOptions: { includeMetadataChanges: true },
+        }
+    );
 
     const handleClose = () => setShowEditJobModal(false);
 
-    const [changesSummary, setChangesSummary] = useState<Array<Change>>([]);
-
-    const [formData, setFormData] = useState<Job>(selectedJob);
-
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value, type } = e.target;
-    
+
         setFormData((prevFormData) => {
             return {
                 ...prevFormData ?? {},
@@ -38,10 +51,10 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }: EditJobModalP
             } as Job;
         });
     }
-    
+
     const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = e.target;
-    
+
         setFormData((prevFormData) => {
             return {
                 ...prevFormData ?? {},
@@ -76,11 +89,9 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }: EditJobModalP
 
         const commentData = {
             comment: generateChangeComments(changesSummary),
-            date: new Date().toLocaleDateString(),
-            time: new Date().toLocaleTimeString(),
-            user: auth.currentUser?.displayName,
+            datetime: new Date().toISOString(),
+            user: auth.currentUser?.email,
         };
-
         try {
             await setDoc(commentRef, commentData);
             console.log('Comment added successfully');
@@ -108,11 +119,40 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }: EditJobModalP
     };
 
     useEffect(() => {
+        // Update the formData state when selectedJob changes
+        setFormData(selectedJob);
+    }, [selectedJob]);
+
+    useEffect(() => {
         // Generate and update the changes summary when formData changes
         const changes = generateChangesSummary(selectedJob, formData);
         setChangesSummary(changes);
     }, [formData, selectedJob]);
 
+    const handleAreaSelectChange = (newValue: MultiValue<Option>) => {
+        const selectedOptions = newValue;
+        const selectedValues = selectedOptions.map(option => option.value);
+        const selectedValuesString = selectedValues.join(', ');
+
+        setFormData((prevFormData) => {
+            return {
+                ...prevFormData ?? {},
+                area: selectedValuesString,
+                name: prevFormData?.name ?? '',
+                date: prevFormData?.date,
+                timeframe: prevFormData?.timeframe,
+                contractor: prevFormData?.contractor,
+                description: prevFormData?.description,
+                reported_by: prevFormData?.reported_by,
+                reference: prevFormData?.reference,
+                priority: prevFormData?.priority,
+                onHold: prevFormData?.onHold,
+                isRecurring: prevFormData?.isRecurring,
+                recurrenceFrequency: prevFormData?.recurrenceFrequency,
+                added: prevFormData?.added,
+            } as Job;
+        });
+    };
 
 
     const handleSubmit = async (e: React.MouseEvent) => {
@@ -122,7 +162,6 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }: EditJobModalP
             const jobRef = doc(db, `live-jobs/${identifier}`);
             await updateDoc(jobRef, formData as { [x: string]: string | boolean | undefined | string[]; });
             setSelectedJob(formData);
-            setFormData(null);
             setShowEditJobModal(false);
             await addCommentToJob(jobRef, changesSummary);
             setChangesSummary([]);
@@ -185,12 +224,22 @@ function EditJobModal({ selectedJob, setSelectedJob, identifier }: EditJobModalP
                             controlId="area"
                         >
                             <Form.Label>Area</Form.Label>
-                            <Form.Control
-                                name='area'
-                                as="textarea"
-                                defaultValue={selectedJob?.area}
-                                rows={1}
-                                onChange={handleInputChange}
+                            <Select
+                                isMulti
+                                onChange={handleAreaSelectChange}
+                                name="area"
+                                options={areaValues?.docs.map((doc) => ({
+                                    value: doc.data().name,
+                                    label: doc.data().name,
+                                }))
+                                }
+                                className="basic-multi-select"
+                                classNamePrefix="select"
+                                defaultValue={selectedJob?.area.split(', ').map((area) => ({
+                                    value: area,
+                                    label: area,
+                                }))
+                                }
                             />
                         </Form.Group>
                         <Form.Group

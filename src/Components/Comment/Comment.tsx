@@ -10,13 +10,14 @@ type CommentProps = {
 }
 
 function Comment({ commentObject }: CommentProps) {
+
   return (
     <Card>
       <Card.Body>
         <blockquote className="blockquote mb-0">
           <p className='comment'>{commentObject.comment}</p>
           <footer className="blockquote-footer">
-            {commentObject.user !== '' ? '' : `${commentObject.user},`} {formatISODate(commentObject.datetime)}
+            {commentObject.user === null ? '' : `${commentObject.user},`} {formatISODate(commentObject.datetime)}
           </footer>
         </blockquote>
       </Card.Body>

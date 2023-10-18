@@ -3,6 +3,7 @@ import './JobCard.css';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { Job } from '../../Pages/Homepage/Homepage'
+import { formatISODate } from './../../Utility/Functions';
 
 type JobCardProps = {
     job: Job,
@@ -48,8 +49,8 @@ function JobCard({ job, setSelectedJob, identifier, setIdentifier, index } : Job
                     <Card key={job?.reference} className="job-card">
                         <Card.Body>
                             <Card.Text>{job?.description}</Card.Text>
-                            <Card.Text>Start: {job?.date}</Card.Text>
-                            <Card.Text>Complete: {job?.timeframe}</Card.Text>
+                            <Card.Text>Start: {formatISODate(job?.date)}</Card.Text>
+                            <Card.Text>Complete: {formatISODate(job?.timeframe)}</Card.Text>
                             <Button variant="primary" onClick={handleClick}>View</Button>
                         </Card.Body>
                     </Card>

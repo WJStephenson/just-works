@@ -1,0 +1,13 @@
+.settings-wrapper {
+    height: 100%;
+    width: 100%;
+    padding: 1rem;
+    overflow-y: scroll;
+}
+
+.settings-container {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 1rem;
+    width: 100%;
+}

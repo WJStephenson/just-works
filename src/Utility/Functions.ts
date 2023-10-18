@@ -1,4 +1,5 @@
-export function formatISODate(isoDate: string) {
+export function formatISODate(isoDate: string | undefined) {
+    if (!isoDate) return ;
     const dateObject = new Date(isoDate);
   
     const year = dateObject.getFullYear();

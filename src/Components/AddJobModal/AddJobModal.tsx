@@ -6,6 +6,13 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import ModalContext from '../../Context/ModalContext';
+import Select, { MultiValue } from 'react-select';
+import { useCollection } from 'react-firebase-hooks/firestore';
+
+type Option = {
+    label: string;
+    value: string;
+};
 
 function AddJobModal() {
     const { showAddModal, setShowAddModal } = useContext(ModalContext);
@@ -28,13 +35,20 @@ function AddJobModal() {
         added: new Date().toLocaleDateString(),
     });
 
+    const [areaValues] = useCollection(
+        collection(db, 'areas'),
+        {
+            snapshotListenOptions: { includeMetadataChanges: true },
+        }
+    );
+
 
     const handleClose = () => {
         setValidated(false);
         setShowAddModal(false)
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | MultiValue<Select>>) => {
         const { name, value, type, checked } = e.target as HTMLInputElement;
 
         if (type === 'checkbox') {
@@ -49,7 +63,21 @@ function AddJobModal() {
             });
         }
     };
-    // React.MouseEvent<HTMLButtonElement>
+
+    
+
+    const handleSelectChange = (newValue: MultiValue<Option>) => {
+        const selectedOptions = newValue;
+        const selectedValues = selectedOptions.map(option => option.value);
+        const selectedValuesString = selectedValues.join(', ');
+    
+        setFormData({
+            ...formData,
+            area: selectedValuesString,
+        });
+        console.log(selectedValuesString);
+    };
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -162,13 +190,25 @@ function AddJobModal() {
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="area">
                             <Form.Label>Area</Form.Label>
-                            <Form.Control
+                            <Select
+                                isMulti
+                                onChange={handleSelectChange}
+                                name="area"
+                                options={areaValues?.docs.map((doc) => ({
+                                    value: doc.data().name,
+                                    label: doc.data().name,
+                                }))
+                                }
+                                className="basic-multi-select"
+                                classNamePrefix="select"
+                            />
+                            {/* <Form.Control
                                 name='area'
                                 as="textarea"
                                 required
                                 rows={1}
                                 onChange={handleChange}
-                            />
+                            /> */}
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="description">
                             <Form.Label>Description</Form.Label>

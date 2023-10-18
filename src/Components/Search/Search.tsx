@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaPlus, FaCheck, FaHome, FaCalendar, FaChartBar, FaCog } from "react-icons/fa";
 import { BiLogOut } from "react-icons/bi";
 import ModalContext from "../../Context/ModalContext";
-import Button from 'react-bootstrap/Button'
 import { auth } from "../../Config/firebaseConfig";
 import { useSignOut } from "react-firebase-hooks/auth";
 
@@ -39,17 +38,19 @@ function Search({ setIsLoggedIn }: SearchProps) {
 
   return (
     <div className='search-container'>
-      <Link to={'/'} title="Home"><FaHome /></Link>
-      <Link to={'/'} onClick={() => setShowAddModal(true)} title="Add a Job"><FaPlus /></Link>
-      <Link to={'/completed'} title="Completed Jobs"><FaCheck /></Link>
-      <Link to={'/calendar'} title="Calendar"><FaCalendar /></Link>
-      <Link to={'/analytics'} title="Analytics"><FaChartBar /></Link>
-      <Link to={'/settings'} title="Settings"><FaCog /></Link>
-
-      <div className='user' title={user?.displayName ?? ''}>
-        {userInitials}
-      </div>
-      <Button onClick={logOut} title="Sign out"><BiLogOut /></Button>
+      <Link to={'/'} title="Home"><FaHome />Home</Link>
+      <Link to={'/'} onClick={() => setShowAddModal(true)} title="Add a Job"><FaPlus />Add</Link>
+      <Link to={'/completed'} title="Completed Jobs"><FaCheck />Complete</Link>
+      <Link to={'/calendar'} title="Calendar"><FaCalendar />Calendar</Link>
+      <Link to={'/analytics'} title="Analytics"><FaChartBar />Analytics</Link>
+      <Link to={'/settings'} title="Settings"><FaCog />Settings</Link>
+      <Link to={'/'} onClick={logOut} title="Sign out"><BiLogOut />Exit</Link>
+      {
+        user?.displayName !== null &&
+        <div className='user' title={user?.displayName ?? ''}>
+          {userInitials}
+        </div>
+      }
     </div>
   )
 }

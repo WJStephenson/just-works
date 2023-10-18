@@ -5,7 +5,7 @@ function Analytics() {
     document.title = 'Just Works | Analytics';  
 
   return (
-    <div>Coming Soon...</div>
+    <div>Analytics Coming Soon...</div>
   )
 }
 

@@ -7,13 +7,11 @@ import JobCard from '../../Components/JobCard/JobCard';
 import AddJobModal from '../../Components/AddJobModal/AddJobModal';
 import SelectedJob from '../../Components/SelectedJob/SelectedJob';
 import { Accordion } from 'react-bootstrap';
-import { formatISODate } from '../../Utility/Functions';
 
 export type Job = {
     name: string,
     area: string,
     date: string,
-    time: string,
     timeframe: string,
     contractor: string,
     description: string,
@@ -63,9 +61,8 @@ function Homepage() {
                                                 job={{
                                                     name: doc.data().name,
                                                     area: doc.data().area,
-                                                    date: formatISODate(doc.data().date),
-                                                    timeframe: formatISODate(doc.data().timeframe),
-                                                    time: doc.data().time,
+                                                    date: doc.data().date,
+                                                    timeframe: doc.data().timeframe,
                                                     contractor: doc.data().contractor,
                                                     description: doc.data().description,
                                                     reported_by: doc.data().reported_by,

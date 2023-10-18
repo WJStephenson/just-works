@@ -11,6 +11,7 @@ import CompleteJobModal from '../CompleteJobModal/CompleteJobModal';
 import DeleteJobModal from '../DeleteJobModal/DeleteJobModal';
 import EditJobModal from '../EditJobModal/EditJobModal';
 import { Job } from '../../Pages/Homepage/Homepage';
+import { formatISODate } from './../../Utility/Functions';
 
 interface SelectedJobProps {
     selectedJob: Job | null;
@@ -25,7 +26,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
     const [formData, setFormData] = useState({
         comment: '',
         datetime: new Date().toISOString(),
-        user: auth.currentUser?.displayName
+        user: auth.currentUser?.email,
     });
 
     const { setShowCompleteModal, setShowDeleteModal, setShowEditJobModal } = useContext(ModalContext);
@@ -90,6 +91,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
             return;
         }
         setValidate(false);
+        console.log(formData);
 
         const sendData = async () => {
             try {
@@ -138,7 +140,7 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
                     <Button variant="danger" onClick={() => setShowDeleteModal(true)}>Delete</Button>
                 </div>
             </div>
-            <div>
+            <div className='information-container'>
                 <div className='priority-ref'>
                     <p className='capitalize'>Priority: {selectedJob?.priority}</p>
                     {
@@ -150,8 +152,8 @@ function SelectedJob({ selectedJob, setSelectedJob, identifier }: SelectedJobPro
                 <h1>{selectedJob?.name}</h1>
                 <h2>{selectedJob?.area}</h2>
                 <h5>{selectedJob?.description}</h5>
-                <p>Start: {selectedJob?.date}</p>
-                <p>Completion: {selectedJob?.timeframe}</p>
+                <p>Start: {formatISODate(selectedJob?.date)}</p>
+                <p>Completion: {formatISODate(selectedJob?.timeframe)}</p>
                 <p>Contractor: {selectedJob?.contractor}</p>
                 <p>Reported By: {selectedJob?.reported_by}</p>
             </div>
